@@ -1,0 +1,142 @@
+{
+    "0020000D": {
+        "name": "StudyInstanceUID",
+        "vr": "UI",
+        "description": "Unique identifier for the study"
+    },
+    "00080020": {
+        "name": "StudyDate",
+        "vr": "DA",
+        "description": "Date the study was performed"
+    },
+    "00080030": {
+        "name": "StudyTime",
+        "vr": "TM",
+        "description": "Time the study was performed"
+    },
+    "00080050": {
+        "name": "AccessionNumber",
+        "vr": "SH",
+        "description": "Identifier of the request for the study"
+    },
+    "00080051": {
+        "name": "IssuerOfAccessionNumberSequence",
+        "vr": "SQ",
+        "description": "Sequence identifying the issuer of the Accession Number"
+    },
+    "00080090": {
+        "name": "ReferringPhysicianName",
+        "vr": "PN",
+        "description": "Name of the physician who referred the patient"
+    },
+    "00080096": {
+        "name": "ReferringPhysicianIdentificationSequence",
+        "vr": "SQ",
+        "description": "Identification of the referring physician"
+    },
+    "00081030": {
+        "name": "StudyDescription",
+        "vr": "LO",
+        "description": "Description of the study"
+    },
+    "00081032": {
+        "name": "ProcedureCodeSequence",
+        "vr": "SQ",
+        "description": "Sequence of codes representing the procedure"
+    },
+    "00081048": {
+        "name": "PhysiciansOfRecord",
+        "vr": "PN",
+        "description": "Names of the physicians of record for the study"
+    },
+    "00081049": {
+        "name": "PhysiciansOfRecordIdentificationSequence",
+        "vr": "SQ",
+        "description": "Identification of the physicians of record"
+    },
+    "00081060": {
+        "name": "NameOfPhysiciansReadingStudy",
+        "vr": "PN",
+        "description": "Names of physicians reading the study"
+    },
+    "00081062": {
+        "name": "PhysiciansReadingStudyIdentificationSequence",
+        "vr": "SQ",
+        "description": "Identification of the physicians reading the study"
+    },
+    "00081080": {
+        "name": "AdmittingDiagnosesDescription",
+        "vr": "LO",
+        "description": "Description of the admitting diagnoses"
+    },
+    "00081084": {
+        "name": "AdmittingDiagnosesCodeSequence",
+        "vr": "SQ",
+        "description": "Coded admitting diagnoses"
+    },
+    "00200010": {
+        "name": "StudyID",
+        "vr": "SH",
+        "description": "Study identifier"
+    },
+    "00321032": {
+        "name": "RequestingPhysician",
+        "vr": "PN",
+        "description": "Name of the physician who requested the study"
+    },
+    "00321033": {
+        "name": "RequestingService",
+        "vr": "LO",
+        "description": "Service requesting the study"
+    },
+    "00321060": {
+        "name": "RequestedProcedureDescription",
+        "vr": "LO",
+        "description": "Description of the requested procedure"
+    },
+    "00321064": {
+        "name": "RequestedProcedureCodeSequence",
+        "vr": "SQ",
+        "description": "Sequence of codes for the requested procedure"
+    },
+    "00321070": {
+        "name": "RequestedContrastAgent",
+        "vr": "LO",
+        "description": "Contrast agent requested for the procedure"
+    },
+    "00400244": {
+        "name": "PerformedProcedureStepStartDate",
+        "vr": "DA",
+        "description": "Date the procedure step started"
+    },
+    "00400245": {
+        "name": "PerformedProcedureStepStartTime",
+        "vr": "TM",
+        "description": "Time the procedure step started"
+    },
+    "00400250": {
+        "name": "PerformedProcedureStepEndDate",
+        "vr": "DA",
+        "description": "Date the procedure step ended"
+    },
+    "00400251": {
+        "name": "PerformedProcedureStepEndTime",
+        "vr": "TM",
+        "description": "Time the procedure step ended"
+    },
+    "00400254": {
+        "name": "PerformedProcedureStepDescription",
+        "vr": "LO",
+        "description": "Description of the performed procedure step"
+    },
+    "00400260": {
+        "name": "PerformedProtocolCodeSequence",
+        "vr": "SQ",
+        "description": "Sequence of codes representing the performed protocol"
+    },
+    "00400275": {
+        "name": "RequestAttributesSequence",
+        "vr": "SQ",
+        "description": "Sequence of request attributes"
+    }
+}

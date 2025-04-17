@@ -1,0 +1,187 @@
+{
+    "00080008": {
+        "name": "ImageType",
+        "vr": "CS",
+        "description": "Type of image"
+    },
+    "00180015": {
+        "name": "BodyPartExamined",
+        "vr": "CS",
+        "description": "Body part examined"
+    },
+    "00180020": {
+        "name": "ScanningSequence",
+        "vr": "CS",
+        "description": "Scanning sequence for MR"
+    },
+    "00180021": {
+        "name": "SequenceVariant",
+        "vr": "CS",
+        "description": "Variant of the scanning sequence"
+    },
+    "00180022": {
+        "name": "ScanOptions",
+        "vr": "CS",
+        "description": "Options for the scan"
+    },
+    "00180023": {
+        "name": "MRAcquisitionType",
+        "vr": "CS",
+        "description": "Type of MR acquisition"
+    },
+    "00180025": {
+        "name": "AngioFlag",
+        "vr": "CS",
+        "description": "Flag indicating angiography"
+    },
+    "00180050": {
+        "name": "SliceThickness",
+        "vr": "DS",
+        "description": "Thickness of the slice in mm"
+    },
+    "00180080": {
+        "name": "RepetitionTime",
+        "vr": "DS",
+        "description": "Repetition time in ms for MR"
+    },
+    "00180081": {
+        "name": "EchoTime",
+        "vr": "DS",
+        "description": "Echo time in ms for MR"
+    },
+    "00180082": {
+        "name": "InversionTime",
+        "vr": "DS",
+        "description": "Inversion time in ms for MR"
+    },
+    "00180083": {
+        "name": "NumberOfAverages",
+        "vr": "DS",
+        "description": "Number of averages for MR"
+    },
+    "00180084": {
+        "name": "ImagingFrequency",
+        "vr": "DS",
+        "description": "Imaging frequency in MHz"
+    },
+    "00180085": {
+        "name": "ImagedNucleus",
+        "vr": "SH",
+        "description": "Nucleus imaged in MR"
+    },
+    "00180086": {
+        "name": "EchoNumbers",
+        "vr": "IS",
+        "description": "Echo numbers for MR"
+    },
+    "00180087": {
+        "name": "MagneticFieldStrength",
+        "vr": "DS",
+        "description": "Magnetic field strength in Tesla"
+    },
+    "00180088": {
+        "name": "SpacingBetweenSlices",
+        "vr": "DS",
+        "description": "Spacing between slices in mm"
+    },
+    "00180089": {
+        "name": "NumberOfPhaseEncodingSteps",
+        "vr": "IS",
+        "description": "Number of phase encoding steps in MR"
+    },
+    "00180091": {
+        "name": "EchoTrainLength",
+        "vr": "IS",
+        "description": "Echo train length for MR"
+    },
+    "00180093": {
+        "name": "PercentSampling",
+        "vr": "DS",
+        "description": "Percentage of sampling in k-space"
+    },
+    "00180094": {
+        "name": "PercentPhaseFieldOfView",
+        "vr": "DS",
+        "description": "Percentage of field of view in phase direction"
+    },
+    "00180095": {
+        "name": "PixelBandwidth",
+        "vr": "DS",
+        "description": "Bandwidth per pixel in Hz"
+    },
+    "00181030": {
+        "name": "ProtocolName",
+        "vr": "LO",
+        "description": "Name of the protocol used"
+    },
+    "00181050": {
+        "name": "SpatialResolution",
+        "vr": "DS",
+        "description": "Spatial resolution in mm"
+    },
+    "00181060": {
+        "name": "TriggerTime",
+        "vr": "DS",
+        "description": "Time in ms after trigger"
+    },
+    "00181090": {
+        "name": "CardiacNumberOfImages",
+        "vr": "IS",
+        "description": "Number of images in a cardiac cycle"
+    },
+    "00181312": {
+        "name": "InPlanePhaseEncodingDirection",
+        "vr": "CS",
+        "description": "Phase encoding direction in the image"
+    },
+    "00181314": {
+        "name": "FlipAngle",
+        "vr": "DS",
+        "description": "Flip angle for MR"
+    },
+    "00185100": {
+        "name": "PatientPosition",
+        "vr": "CS",
+        "description": "Position of the patient"
+    },
+    "00189073": {
+        "name": "AcquisitionDuration",
+        "vr": "FD",
+        "description": "Duration of acquisition in seconds"
+    },
+    "00200012": {
+        "name": "AcquisitionNumber",
+        "vr": "IS",
+        "description": "Acquisition number"
+    },
+    "00200032": {
+        "name": "ImagePositionPatient",
+        "vr": "DS",
+        "description": "Position of the image in patient coordinates"
+    },
+    "00200037": {
+        "name": "ImageOrientationPatient",
+        "vr": "DS",
+        "description": "Orientation of the image in patient coordinates"
+    },
+    "00200052": {
+        "name": "FrameOfReferenceUID",
+        "vr": "UI",
+        "description": "Unique identifier for the frame of reference"
+    },
+    "00201040": {
+        "name": "PositionReferenceIndicator",
+        "vr": "LO",
+        "description": "Reference point for position"
+    },
+    "00201041": {
+        "name": "SliceLocation",
+        "vr": "DS",
+        "description": "Location of the slice"
+    },
+    "00280030": {
+        "name": "PixelSpacing",
+        "vr": "DS",
+        "description": "Physical distance between pixels"
+    }
+}

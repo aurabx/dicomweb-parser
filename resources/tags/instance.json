@@ -1,0 +1,147 @@
+{
+    "00080018": {
+        "name": "SOPInstanceUID",
+        "vr": "UI",
+        "description": "Unique identifier for the instance"
+    },
+    "00080016": {
+        "name": "SOPClassUID",
+        "vr": "UI",
+        "description": "Unique identifier for the SOP Class"
+    },
+    "00080005": {
+        "name": "SpecificCharacterSet",
+        "vr": "CS",
+        "description": "Character set used in text values"
+    },
+    "00080012": {
+        "name": "InstanceCreationDate",
+        "vr": "DA",
+        "description": "Date the instance was created"
+    },
+    "00080013": {
+        "name": "InstanceCreationTime",
+        "vr": "TM",
+        "description": "Time the instance was created"
+    },
+    "00080023": {
+        "name": "ContentDate",
+        "vr": "DA",
+        "description": "Date the content was created"
+    },
+    "00080033": {
+        "name": "ContentTime",
+        "vr": "TM",
+        "description": "Time the content was created"
+    },
+    "0008002A": {
+        "name": "AcquisitionDateTime",
+        "vr": "DT",
+        "description": "Date and time when the acquisition started"
+    },
+    "00200013": {
+        "name": "InstanceNumber",
+        "vr": "IS",
+        "description": "Number identifying this instance"
+    },
+    "00100010": {
+        "name": "PatientName",
+        "vr": "PN",
+        "description": "Patient's full name"
+    },
+    "00100020": {
+        "name": "PatientID",
+        "vr": "LO",
+        "description": "Primary identifier for the patient"
+    },
+    "00100030": {
+        "name": "PatientBirthDate",
+        "vr": "DA",
+        "description": "Birth date of the patient"
+    },
+    "00100040": {
+        "name": "PatientSex",
+        "vr": "CS",
+        "description": "Sex of the patient"
+    },
+    "0020000D": {
+        "name": "StudyInstanceUID",
+        "vr": "UI",
+        "description": "Unique identifier for the study"
+    },
+    "0020000E": {
+        "name": "SeriesInstanceUID",
+        "vr": "UI",
+        "description": "Unique identifier for the series"
+    },
+    "00280002": {
+        "name": "SamplesPerPixel",
+        "vr": "US",
+        "description": "Number of samples (planes) in the image"
+    },
+    "00280004": {
+        "name": "PhotometricInterpretation",
+        "vr": "CS",
+        "description": "Interpretation of the pixel data"
+    },
+    "00280008": {
+        "name": "NumberOfFrames",
+        "vr": "IS",
+        "description": "Number of frames in a multi-frame image"
+    },
+    "00280010": {
+        "name": "Rows",
+        "vr": "US",
+        "description": "Number of rows in the image"
+    },
+    "00280011": {
+        "name": "Columns",
+        "vr": "US",
+        "description": "Number of columns in the image"
+    },
+    "00280100": {
+        "name": "BitsAllocated",
+        "vr": "US",
+        "description": "Number of bits allocated for each pixel"
+    },
+    "00280101": {
+        "name": "BitsStored",
+        "vr": "US",
+        "description": "Number of bits stored for each pixel"
+    },
+    "00280102": {
+        "name": "HighBit",
+        "vr": "US",
+        "description": "Most significant bit for each pixel"
+    },
+    "00280103": {
+        "name": "PixelRepresentation",
+        "vr": "US",
+        "description": "Representation of pixel values (signed or unsigned)"
+    },
+    "00281050": {
+        "name": "WindowCenter",
+        "vr": "DS",
+        "description": "Center of the window for display"
+    },
+    "00281051": {
+        "name": "WindowWidth",
+        "vr": "DS",
+        "description": "Width of the window for display"
+    },
+    "00281053": {
+        "name": "RescaleSlope",
+        "vr": "DS",
+        "description": "Slope of the rescale operation"
+    },
+    "00281054": {
+        "name": "RescaleIntercept",
+        "vr": "DS",
+        "description": "Intercept of the rescale operation"
+    },
+    "00281055": {
+        "name": "RescaleType",
+        "vr": "LO",
+        "description": "Type of rescale operation"
+    }
+}

@@ -1,144 +1,46 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Aurabx\DicomWebParser;
+
 /**
  * Utility class for working with DICOM tags
  */
 class DicomTag
 {
     /**
-     * Common DICOM tags with their descriptions
+     * @var DicomTagLoader Tag loader instance
      */
-    public const TAGS = [
-        // Patient Information
-        '00100010' => 'PatientName',
-        '00100020' => 'PatientID',
-        '00100030' => 'PatientBirthDate',
-        '00100040' => 'PatientSex',
-        '00101010' => 'PatientAge',
-        '00101020' => 'PatientSize',
-        '00101030' => 'PatientWeight',
-
-        // Study Information
-        '0020000D' => 'StudyInstanceUID',
-        '00080020' => 'StudyDate',
-        '00080030' => 'StudyTime',
-        '00080050' => 'AccessionNumber',
-        '00080090' => 'ReferringPhysicianName',
-        '00081030' => 'StudyDescription',
-        '00081060' => 'NameOfPhysiciansReadingStudy',
-
-        // Series Information
-        '0020000E' => 'SeriesInstanceUID',
-        '00080060' => 'Modality',
-        '00080021' => 'SeriesDate',
-        '00080031' => 'SeriesTime',
-        '0008103E' => 'SeriesDescription',
-        '00200011' => 'SeriesNumber',
-        '00185100' => 'PatientPosition',
-
-        // Instance Information
-        '00080018' => 'SOPInstanceUID',
-        '00080016' => 'SOPClassUID',
-        '00200013' => 'InstanceNumber',
-        '00080023' => 'ContentDate',
-        '00080033' => 'ContentTime',
-        '00280010' => 'Rows',
-        '00280011' => 'Columns',
-        '00280100' => 'BitsAllocated',
-        '00280101' => 'BitsStored',
-        '00280102' => 'HighBit',
-        '00280103' => 'PixelRepresentation',
-        '00280004' => 'PhotometricInterpretation',
-        '00281050' => 'WindowCenter',
-        '00281051' => 'WindowWidth',
-
-        // Image Acquisition
-        '00180050' => 'SliceThickness',
-        '00180088' => 'SpacingBetweenSlices',
-        '00201041' => 'SliceLocation',
-        '00080008' => 'ImageType',
-        '00200032' => 'ImagePositionPatient',
-        '00200037' => 'ImageOrientationPatient',
-        '00180080' => 'RepetitionTime',
-        '00180081' => 'EchoTime',
-        '00180082' => 'InversionTime',
-        '00189073' => 'AcquisitionDuration',
-
-        // Protocol
-        '00180015' => 'BodyPartExamined',
-        '00180020' => 'ScanningSequence',
-        '00180021' => 'SequenceVariant',
-        '00180022' => 'ScanOptions',
-        '00180023' => 'MRAcquisitionType',
-        '00180024' => 'SequenceName',
-        '00180025' => 'AngioFlag',
-
-        // Miscellaneous
-        '00200010' => 'StudyID',
-        '00081090' => 'ManufacturerModelName',
-        '00080070' => 'Manufacturer',
-        '00080080' => 'InstitutionName',
-        '00080081' => 'InstitutionAddress',
-        '00081040' => 'InstitutionalDepartmentName',
-        '00181000' => 'DeviceSerialNumber',
-        '00181020' => 'SoftwareVersions',
-        '00181030' => 'ProtocolName'
-    ];
+    private static ?DicomTagLoader $loader = null;
 
     /**
-     * Map of common tags from name to tag ID
+     * Initialize the DicomTag class with a specific tags file or directory
+     *
+     * @param string $tagsPath Path to the tags JSON file or directory
+     * @return void
+     * @throws ParserException If the tags cannot be loaded
      */
-    public const TAG_BY_NAME = [
-        'PatientName' => '00100010',
-        'PatientID' => '00100020',
-        'StudyInstanceUID' => '0020000D',
-        'SeriesInstanceUID' => '0020000E',
-        'SOPInstanceUID' => '00080018',
-        'SOPClassUID' => '00080016',
-        'Modality' => '00080060',
-        'StudyDate' => '00080020',
-        'SeriesNumber' => '00200011',
-        'InstanceNumber' => '00200013'
-        // Other tags can be added as needed
-    ];
+    public static function init(string $tagsPath): void
+    {
+        // Create a new loader with the specified path
+        self::$loader = null; // Reset any existing loader
+        self::getLoader(); // This will create a new loader with the custom path
+    }
 
     /**
-     * Value Representation codes and their meanings
+     * Get or create the tag loader instance
+     *
+     * @return DicomTagLoader
      */
-    public const VR_MEANINGS = [
-        'AE' => 'Application Entity',
-        'AS' => 'Age String',
-        'AT' => 'Attribute Tag',
-        'CS' => 'Code String',
-        'DA' => 'Date',
-        'DS' => 'Decimal String',
-        'DT' => 'Date Time',
-        'FD' => 'Floating Point Double',
-        'FL' => 'Floating Point Single',
-        'IS' => 'Integer String',
-        'LO' => 'Long String',
-        'LT' => 'Long Text',
-        'OB' => 'Other Byte',
-        'OD' => 'Other Double',
-        'OF' => 'Other Float',
-        'OL' => 'Other Long',
-        'OW' => 'Other Word',
-        'PN' => 'Person Name',
-        'SH' => 'Short String',
-        'SL' => 'Signed Long',
-        'SQ' => 'Sequence of Items',
-        'SS' => 'Signed Short',
-        'ST' => 'Short Text',
-        'TM' => 'Time',
-        'UC' => 'Unlimited Characters',
-        'UI' => 'Unique Identifier',
-        'UL' => 'Unsigned Long',
-        'UN' => 'Unknown',
-        'UR' => 'URI/URL',
-        'US' => 'Unsigned Short',
-        'UT' => 'Unlimited Text'
-    ];
+    private static function getLoader(): DicomTagLoader
+    {
+        if (self::$loader === null) {
+            self::$loader = new DicomTagLoader();
+        }
+
+        return self::$loader;
+    }
 
     /**
      * Get the descriptive name for a tag
@@ -148,8 +50,7 @@ class DicomTag
      */
     public static function getName(string $tag): ?string
     {
-        $normalizedTag = self::normalizeTag($tag);
-        return self::TAGS[$normalizedTag] ?? null;
+        return self::getLoader()->getTagName($tag);
     }
 
     /**
@@ -160,7 +61,29 @@ class DicomTag
      */
     public static function getTagByName(string $name): ?string
     {
-        return self::TAG_BY_NAME[$name] ?? null;
+        return self::getLoader()->getTagIdByName($name);
+    }
+
+    /**
+     * Get the Value Representation (VR) for a tag
+     *
+     * @param string $tag DICOM tag
+     * @return string|null VR code or null if unknown
+     */
+    public static function getVR(string $tag): ?string
+    {
+        return self::getLoader()->getTagVR($tag);
+    }
+
+    /**
+     * Get the description for a tag
+     *
+     * @param string $tag DICOM tag
+     * @return string|null Description or null if unknown
+     */
+    public static function getDescription(string $tag): ?string
+    {
+        return self::getLoader()->getTagDescription($tag);
     }
 
     /**
@@ -226,7 +149,7 @@ class DicomTag
      */
     public static function getVRMeaning(string $vr): ?string
     {
-        return self::VR_MEANINGS[strtoupper($vr)] ?? null;
+        return self::getLoader()->getVRMeaning($vr);
     }
 
     /**
@@ -237,17 +160,27 @@ class DicomTag
      */
     public static function isKnownTag(string $tag): bool
     {
-        $normalized = self::normalizeTag($tag);
-        return isset(self::TAGS[$normalized]);
+        return self::getLoader()->getTagName($tag) !== null;
     }
 
     /**
      * Get all known tags as an associative array
      *
-     * @return array<string, string> Array of tag ID => tag name
+     * @return array<string, array<string, mixed>> Array of tag ID => tag info
      */
     public static function getAllTags(): array
     {
-        return self::TAGS;
+        return self::getLoader()->getAllTags();
+    }
+
+    /**
+     * Get complete information about a tag
+     *
+     * @param string $tag DICOM tag
+     * @return array<string, mixed>|null Tag information or null if unknown
+     */
+    public static function getTagInfo(string $tag): ?array
+    {
+        return self::getLoader()->getTagInfo($tag);
     }
 }

@@ -1,0 +1,182 @@
+{
+    "0040A010": {
+        "name": "RelationshipType",
+        "vr": "CS",
+        "description": "Type of relationship between data elements"
+    },
+    "0040A040": {
+        "name": "ValueType",
+        "vr": "CS",
+        "description": "Type of content item value"
+    },
+    "0040A043": {
+        "name": "ConceptNameCodeSequence",
+        "vr": "SQ",
+        "description": "Code sequence for the concept name"
+    },
+    "0040A050": {
+        "name": "ContinuityOfContent",
+        "vr": "CS",
+        "description": "Whether content is separate or continuous"
+    },
+    "0040A073": {
+        "name": "VerificationFlag",
+        "vr": "SQ",
+        "description": "Flag indicating if content has been verified"
+    },
+    "0040A075": {
+        "name": "VerifyingObserverSequence",
+        "vr": "SQ",
+        "description": "Information about the verifying observer"
+    },
+    "0040A088": {
+        "name": "ReportNumber",
+        "vr": "SQ",
+        "description": "Number of the report"
+    },
+    "0040A0B0": {
+        "name": "ReferencedWaveform",
+        "vr": "US",
+        "description": "Referenced waveform data"
+    },
+    "0040A120": {
+        "name": "DateTime",
+        "vr": "DT",
+        "description": "Date and time"
+    },
+    "0040A121": {
+        "name": "Date",
+        "vr": "DA",
+        "description": "Date"
+    },
+    "0040A122": {
+        "name": "Time",
+        "vr": "TM",
+        "description": "Time"
+    },
+    "0040A123": {
+        "name": "PersonName",
+        "vr": "PN",
+        "description": "Person's name"
+    },
+    "0040A124": {
+        "name": "UID",
+        "vr": "UI",
+        "description": "Unique identifier"
+    },
+    "0040A130": {
+        "name": "TemporalRangeType",
+        "vr": "CS",
+        "description": "Type of temporal range"
+    },
+    "0040A132": {
+        "name": "ReferencedSamplePositions",
+        "vr": "UL",
+        "description": "Position of referenced samples"
+    },
+    "0040A160": {
+        "name": "TextValue",
+        "vr": "UT",
+        "description": "Text value of content item"
+    },
+    "0040A168": {
+        "name": "ConceptCodeSequence",
+        "vr": "SQ",
+        "description": "Code sequence for the concept"
+    },
+    "0040A180": {
+        "name": "AnnotationGroupNumber",
+        "vr": "US",
+        "description": "Number of the annotation group"
+    },
+    "0040A195": {
+        "name": "ModifierCodeSequence",
+        "vr": "SQ",
+        "description": "Code sequence for the modifier"
+    },
+    "0040A300": {
+        "name": "MeasuredValueSequence",
+        "vr": "SQ",
+        "description": "Sequence of measured values"
+    },
+    "0040A301": {
+        "name": "NumericValueQualifierCodeSequence",
+        "vr": "SQ",
+        "description": "Code sequence for numeric value qualifier"
+    },
+    "0040A30A": {
+        "name": "NumericValue",
+        "vr": "DS",
+        "description": "Numeric value of a measurement"
+    },
+    "0040A491": {
+        "name": "CompletionFlag",
+        "vr": "CS",
+        "description": "Flag indicating completion status"
+    },
+    "0040A492": {
+        "name": "CompletionFlagDescription",
+        "vr": "LO",
+        "description": "Description of completion status"
+    },
+    "0040A493": {
+        "name": "VerificationFlag",
+        "vr": "CS",
+        "description": "Flag indicating verification status"
+    },
+    "0040A494": {
+        "name": "ArchiveRequested",
+        "vr": "CS",
+        "description": "Flag indicating if archiving is requested"
+    },
+    "0040A504": {
+        "name": "ContentTemplateSequence",
+        "vr": "SQ",
+        "description": "Sequence of templates used for content"
+    },
+    "0040A525": {
+        "name": "IdenticalDocumentsSequence",
+        "vr": "SQ",
+        "description": "Sequence of identical documents"
+    },
+    "0040A730": {
+        "name": "ContentSequence",
+        "vr": "SQ",
+        "description": "Sequence of content items"
+    },
+    "0040B020": {
+        "name": "AnnotationSequence",
+        "vr": "SQ",
+        "description": "Sequence of annotations"
+    },
+    "0040DB00": {
+        "name": "TemplateIdentifier",
+        "vr": "CS",
+        "description": "Identifier for a template"
+    },
+    "0040DB06": {
+        "name": "TemplateVersion",
+        "vr": "DT",
+        "description": "Version of a template"
+    },
+    "0040DB07": {
+        "name": "TemplateLocalVersion",
+        "vr": "DT",
+        "description": "Local version of a template"
+    },
+    "0040DB0B": {
+        "name": "TemplateExtensionFlag",
+        "vr": "CS",
+        "description": "Flag indicating if template is extended"
+    },
+    "0040DB0C": {
+        "name": "TemplateExtensionOrganizationUID",
+        "vr": "UI",
+        "description": "UID of organization that extended the template"
+    },
+    "0040DB0D": {
+        "name": "TemplateExtensionCreatorUID",
+        "vr": "UI",
+        "description": "UID of creator that extended the template"
+    }
+}
