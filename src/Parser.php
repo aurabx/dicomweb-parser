@@ -6,6 +6,15 @@ use Aurabx\DicomWebParser\DicomElement;
 use Aurabx\DicomWebParser\DicomInstance;
 use Aurabx\DicomWebParser\DicomSeries;
 use Aurabx\DicomWebParser\DicomStudy;
+use Aurabx\DicomWebParser\Elements\AttributeTagParser;
+use Aurabx\DicomWebParser\Elements\BinaryParser;
+use Aurabx\DicomWebParser\Elements\DateParser;
+use Aurabx\DicomWebParser\Elements\DateTime;
+use Aurabx\DicomWebParser\Elements\DecimalParser;
+use Aurabx\DicomWebParser\Elements\FloatingPointParser;
+use Aurabx\DicomWebParser\Elements\IntegerParser;
+use Aurabx\DicomWebParser\Elements\PersonNameParser;
+use Aurabx\DicomWebParser\Elements\TimeParser;
 use Aurabx\DicomWebParser\ParserException;
 
 /**
@@ -114,7 +123,7 @@ class Parser
     }
 
     /**
-     * Parse a DICOM element from the JSON representation
+     * Parse a DICOM element from the JSON representation with enhanced type handling
      *
      * @param array $element DICOM element data
      * @return DicomElement
@@ -130,25 +139,60 @@ class Parser
                 case 'SQ': // Sequence
                     $items = [];
                     foreach ($element['Value'] as $item) {
-                        $itemElements = [];
-                        foreach ($item as $itemTag => $itemElement) {
-                            $itemElements[$itemTag] = $this->parseElement($itemElement);
-                        }
+                        $itemElements = array_map(function ($itemElement) {
+                            return $this->parseElement($itemElement);
+                        }, $item);
                         $items[] = $itemElements;
                     }
                     $value = $items;
                     break;
 
                 case 'PN': // Person Name
-                    $value = $this->parsePersonName($element['Value']);
+                    $value = PersonNameParser::parse($element);
                     break;
 
                 case 'DA': // Date
-                    $value = $this->parseDates($element['Value']);
+                    $value = DateParser::parse($element);
                     break;
 
                 case 'TM': // Time
-                    $value = $this->parseTimes($element['Value']);
+                    $value = TimeParser::parse($element);
+                    break;
+
+                case 'DT': // DateTime
+                    $value = DateTime::parse($element);
+                    break;
+
+                case 'AT': // Attribute Tag
+                    $value = AttributeTagParser::parse($element);
+                    break;
+
+                case 'DS': // Decimal String
+                    $value = DecimalParser::parse($element);
+                    break;
+
+                case 'IS': // Integer String
+                    $value = IntegerParser::parse($element);
+                    break;
+
+                case 'FL': // Floating Point Single
+                case 'FD': // Floating Point Double
+                    $value = FloatingPointParser::parse($element);
+                    break;
+
+                case 'OB': // Other Byte
+                case 'OW': // Other Word
+                case 'OF': // Other Float
+                case 'OD': // Other Double
+                    $value = BinaryParser::parse($element);
+                    break;
+
+                case 'UI': // Unique Identifier
+                    $value = $element['Value'];
+                    break;
+
+                case 'UN': // Unknown
+                    $value = $element; // Keep as is, may be binary
                     break;
 
                 default:
@@ -160,95 +204,6 @@ class Parser
         return new DicomElement($vr, $value);
     }
 
-    /**
-     * Parse person name values
-     *
-     * @param array $values Array of person name values
-     * @return array Parsed person names
-     */
-    protected function parsePersonName(array $values): array
-    {
-        $result = [];
-
-        foreach ($values as $nameData) {
-            if (is_array($nameData)) {
-                // Person name components
-                $name = [
-                    'family' => $nameData['Alphabetic']['FamilyName'] ?? null,
-                    'given' => $nameData['Alphabetic']['GivenName'] ?? null,
-                    'middle' => $nameData['Alphabetic']['MiddleName'] ?? null,
-                    'prefix' => $nameData['Alphabetic']['NamePrefix'] ?? null,
-                    'suffix' => $nameData['Alphabetic']['NameSuffix'] ?? null,
-                ];
-                $result[] = $name;
-            } else {
-                // Simple string name
-                $result[] = $nameData;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Parse date values
-     *
-     * @param array $values Array of date values
-     * @return array<\DateTimeImmutable> Array of parsed dates
-     */
-    protected function parseDates(array $values): array
-    {
-        $result = [];
-
-        foreach ($values as $dateStr) {
-            try {
-                // DICOM date format: YYYYMMDD
-                if (strlen($dateStr) === 8) {
-                    $year = substr($dateStr, 0, 4);
-                    $month = substr($dateStr, 4, 2);
-                    $day = substr($dateStr, 6, 2);
-                    $result[] = new \DateTimeImmutable("$year-$month-$day");
-                } else {
-                    $result[] = $dateStr;
-                }
-            } catch (\Exception $e) {
-                $result[] = $dateStr; // Keep original if parsing fails
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Parse time values
-     *
-     * @param array $values Array of time values
-     * @return array Parsed times
-     */
-    protected function parseTimes(array $values): array
-    {
-        $result = [];
-
-        foreach ($values as $timeStr) {
-            try {
-                // DICOM time format can be various formats like HHMMSS.FFFFFF
-                $hours = substr($timeStr, 0, 2);
-                $minutes = substr($timeStr, 2, 2);
-                $seconds = substr($timeStr, 4, 2);
-                $fractions = substr($timeStr, 6);
-
-                if ($fractions) {
-                    $result[] = "$hours:$minutes:$seconds.$fractions";
-                } else {
-                    $result[] = "$hours:$minutes:$seconds";
-                }
-            } catch (\Exception $e) {
-                $result[] = $timeStr; // Keep original if parsing fails
-            }
-        }
-
-        return $result;
-    }
 
     /**
      * Prepare JSON data for parsing
