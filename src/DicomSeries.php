@@ -156,4 +156,7 @@ class DicomSeries
 
         return $this;
     }
+
+
+
 }

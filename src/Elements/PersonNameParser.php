@@ -4,28 +4,31 @@ namespace Aurabx\DicomWebParser\Elements;
 
 class PersonNameParser implements ElementParserInterface
 {
-
     public static function parse(array $element): mixed
     {
-        $result = [];
+        $value = $element['Value'] ?? null;
 
-        foreach ($element['Value'] as $nameData) {
-            if (is_array($nameData)) {
-                // Person name components
-                $name = [
-                    'family' => $nameData['Alphabetic']['FamilyName'] ?? null,
-                    'given' => $nameData['Alphabetic']['GivenName'] ?? null,
-                    'middle' => $nameData['Alphabetic']['MiddleName'] ?? null,
-                    'prefix' => $nameData['Alphabetic']['NamePrefix'] ?? null,
-                    'suffix' => $nameData['Alphabetic']['NameSuffix'] ?? null,
-                ];
-                $result[] = $name;
-            } else {
-                // Simple string name
-                $result[] = $nameData;
-            }
+        if (!is_array($value)) {
+            return null;
         }
 
-        return $result;
+        return array_map(static function ($v) {
+            if (is_string($v)) {
+                // Parse as DICOM name: Family^Given^Middle^Prefix^Suffix
+                $parts = explode('^', $v);
+
+                return [
+                    'Alphabetic' => [
+                        'FamilyName' => $parts[0] ?? null,
+                        'GivenName' => $parts[1] ?? null,
+                        'MiddleName' => $parts[2] ?? null,
+                        'NamePrefix' => $parts[3] ?? null,
+                        'NameSuffix' => $parts[4] ?? null,
+                    ],
+                ];
+            }
+
+            return $v;
+        }, $value);
     }
 }

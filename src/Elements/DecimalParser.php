@@ -4,20 +4,14 @@ namespace Aurabx\DicomWebParser\Elements;
 
 class DecimalParser implements ElementParserInterface
 {
-
     public static function parse(array $element): mixed
     {
-        $result = [];
+        $value = $element['Value'] ?? null;
 
-        foreach ($element['Value'] as $dsValue) {
-            // Attempt to convert string to float
-            if (is_string($dsValue)) {
-                $result[] = (float)$dsValue;
-            } else {
-                $result[] = $dsValue; // Keep as is if already numeric or other
-            }
+        if (is_array($value)) {
+            return array_map(static fn($v) => (string) $v, $value);
         }
 
-        return $result;
+        return $value !== null ? (string) $value : null;
     }
 }

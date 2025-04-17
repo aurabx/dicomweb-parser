@@ -195,4 +195,17 @@ class DicomStudy
 
         return $this->series[0]->getInstances()[0]->getFirstValue('00100020');
     }
+
+    /**
+     * @param  string  $name
+     * @return mixed
+     */
+    public function getFirstValueByName(string $name): mixed
+    {
+        if (empty($this->series) || empty($this->series[0]->getInstances())) {
+            return null;
+        }
+
+        return $this->series[0]->getInstances()[0]->getFirstValueByName($name);
+    }
 }

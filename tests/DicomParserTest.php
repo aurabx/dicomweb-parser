@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Aurabx\DicomWebParser\Tests;
 
+use Aurabx\DicomWebParser\DicomDictionary;
+use Aurabx\DicomWebParser\DicomTagLoader;
 use Aurabx\DicomWebParser\Parser;
 use Aurabx\DicomWebParser\DicomInstance;
 use Aurabx\DicomWebParser\DicomStudy;
@@ -120,8 +122,8 @@ JSON;
         // Test patient name
         $patientName = $instance->getFirstValue('00100010');
         $this->assertIsArray($patientName);
-        $this->assertEquals('Doe', $patientName['family']);
-        $this->assertEquals('Jane', $patientName['given']);
+        $this->assertEquals('Doe', $patientName['Alphabetic']['FamilyName']);
+        $this->assertEquals('Jane', $patientName['Alphabetic']['GivenName']);
     }
 
     public function testParseStudy(): void
@@ -401,4 +403,175 @@ JSON;
         $this->assertEquals('CODE2', $codes[1]);
         $this->assertEquals('CODE3', $codes[2]);
     }
+
+    public function testParseStudyWithMultipleSeries(): void
+    {
+        $studyInstanceUid = '1.2.3.4.5.6.7.8.9';
+
+        $metadata = [
+            [
+                '0020000D' => ['vr' => 'UI', 'Value' => [$studyInstanceUid]],
+                '00081030' => ['vr' => 'LO', 'Value' => ['Brain CT and MRI Study']],
+                '00080020' => ['vr' => 'DA', 'Value' => ['20240101']],
+                '00080030' => ['vr' => 'TM', 'Value' => ['120000']],
+                '00080050' => ['vr' => 'SH', 'Value' => ['ACC123456']],
+                '00080090' => ['vr' => 'PN', 'Value' => [['Alphabetic' => 'Dr. John Smith']]],
+                '00080080' => ['vr' => 'LO', 'Value' => ['Test Hospital']],
+                '00080081' => ['vr' => 'ST', 'Value' => ['123 Medical Drive, Boston MA 02115']],
+                '00100020' => ['vr' => 'LO', 'Value' => ['PatientID123']],
+                '00100010' => ['vr' => 'PN', 'Value' => [['Alphabetic' => 'Smith^John']]],
+                '00100040' => ['vr' => 'CS', 'Value' => ['M']],
+                '00100030' => ['vr' => 'DA', 'Value' => ['19800101']],
+                '00101010' => ['vr' => 'AS', 'Value' => ['45']],
+                '0020000E' => ['vr' => 'UI', 'Value' => ['series-uid-1']],
+                '0008103E' => ['vr' => 'LO', 'Value' => ['Axial CT']],
+                '00080060' => ['vr' => 'CS', 'Value' => ['CT']],
+                '00200011' => ['vr' => 'IS', 'Value' => ['2']],
+                '00180015' => ['vr' => 'CS', 'Value' => ['HEAD']],
+            ],
+            [
+                '0020000D' => ['vr' => 'UI', 'Value' => [$studyInstanceUid]],
+                '00081030' => ['vr' => 'LO', 'Value' => ['Brain CT and MRI Study']],
+                '00080020' => ['vr' => 'DA', 'Value' => ['20240101']],
+                '00080030' => ['vr' => 'TM', 'Value' => ['120000']],
+                '00080050' => ['vr' => 'SH', 'Value' => ['ACC123456']],
+                '00080090' => ['vr' => 'PN', 'Value' => [['Alphabetic' => 'Dr. John Smith']]],
+                '00080080' => ['vr' => 'LO', 'Value' => ['Test Hospital']],
+                '00080081' => ['vr' => 'ST', 'Value' => ['123 Medical Drive, Boston MA 02115']],
+                '00100020' => ['vr' => 'LO', 'Value' => ['PatientID123']],
+                '00100010' => ['vr' => 'PN', 'Value' => [['Alphabetic' => 'Smith^John']]],
+                '00100040' => ['vr' => 'CS', 'Value' => ['M']],
+                '00100030' => ['vr' => 'DA', 'Value' => ['19800101']],
+                '00101010' => ['vr' => 'AS', 'Value' => ['45']],
+                '0020000E' => ['vr' => 'UI', 'Value' => ['series-uid-2']],
+                '0008103E' => ['vr' => 'LO', 'Value' => ['Sagittal MRI']],
+                '00080060' => ['vr' => 'CS', 'Value' => ['MR']],
+                '00200011' => ['vr' => 'IS', 'Value' => ['3']],
+                '00180015' => ['vr' => 'CS', 'Value' => ['HEAD']],
+            ],
+            [
+                '0020000D' => ['vr' => 'UI', 'Value' => [$studyInstanceUid]],
+                '00081030' => ['vr' => 'LO', 'Value' => ['Complete Neurological Examination']],
+                '00080020' => ['vr' => 'DA', 'Value' => ['20240101']],
+                '00080030' => ['vr' => 'TM', 'Value' => ['115500']],
+                '00080050' => ['vr' => 'SH', 'Value' => ['ACC123456']],
+                '00080090' => ['vr' => 'PN', 'Value' => [['Alphabetic' => 'Dr. Jane Miller']]],
+                '00080080' => ['vr' => 'LO', 'Value' => ['Test Hospital']],
+                '00080081' => ['vr' => 'ST', 'Value' => ['123 Medical Drive, Boston MA 02115']],
+                '00100020' => ['vr' => 'LO', 'Value' => ['PatientID123']],
+                '00100010' => ['vr' => 'PN', 'Value' => [['Alphabetic' => 'Smith^John']]],
+                '00100040' => ['vr' => 'CS', 'Value' => ['M']],
+                '00100030' => ['vr' => 'DA', 'Value' => ['19800101']],
+                '00101010' => ['vr' => 'AS', 'Value' => ['45']],
+                '0020000E' => ['vr' => 'UI', 'Value' => ['series-uid-3']],
+                '0008103E' => ['vr' => 'LO', 'Value' => ['X-Ray']],
+                '00080060' => ['vr' => 'CS', 'Value' => ['CR']],
+                '00200011' => ['vr' => 'IS', 'Value' => ['1']],
+                '00180015' => ['vr' => 'CS', 'Value' => ['HEAD']],
+            ]
+        ];
+
+        $study = $this->parser->parseStudy($metadata);
+
+        $this->assertInstanceOf(\Aurabx\DicomWebParser\DicomStudy::class, $study);
+        $this->assertEquals($studyInstanceUid, $study->getStudyInstanceUid());
+        $this->assertEquals(3, $study->getSeriesCount());
+        $this->assertEquals(['CT', 'MR', 'CR'], array_values(array_unique($study->getModalities())));
+        $this->assertEquals('PatientID123', $study->getPatientId());
+
+        $series = $study->getSeries();
+        $this->assertCount(3, $series);
+
+        // Sort by series number to assert order
+        usort($series, fn($a, $b) => $a->getSeriesNumber() <=> $b->getSeriesNumber());
+
+        $this->assertEquals('series-uid-3', $series[0]->getSeriesInstanceUid()); // Series number 1
+        $this->assertEquals('series-uid-1', $series[1]->getSeriesInstanceUid()); // Series number 2
+        $this->assertEquals('series-uid-2', $series[2]->getSeriesInstanceUid()); // Series number 3
+    }
+
+    public function testComplexOtherPatientIdsSequence(): void
+    {
+        $metadata = [
+            [
+                '0020000D' => ['vr' => 'UI', 'Value' => ['1.2.3']],
+                '0020000E' => ['vr' => 'UI', 'Value' => ['1.2.3.4']],
+                '00080018' => ['vr' => 'UI', 'Value' => ['1.2.3.4.5']],
+                '00100020' => ['vr' => 'LO', 'Value' => ['PrimaryID']],
+                '0010000B' => [
+                    'vr' => 'SQ',
+                    'Value' => [
+                        [
+                            '00100020' => ['vr' => 'LO', 'Value' => ['AltID1']],
+                            '00100021' => ['vr' => 'LO', 'Value' => ['HospitalA']],
+                            '00100022' => ['vr' => 'CS', 'Value' => ['TEXT']]
+                        ],
+                        [
+                            '00100020' => ['vr' => 'LO', 'Value' => ['AltID2']],
+                            '00100024' => ['vr' => 'SQ', 'Value' => [
+                                [
+                                    '00400032' => ['vr' => 'LO', 'Value' => ['NationalID']],
+                                    '00400033' => ['vr' => 'LO', 'Value' => ['AU']]
+                                ]
+                            ]]
+                        ],
+                        [
+                            '00100020' => ['vr' => 'LO', 'Value' => ['AltID3']]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $instance = $this->parser->parseInstance($metadata);
+        $this->assertInstanceOf(\Aurabx\DicomWebParser\DicomInstance::class, $instance);
+
+        $otherIds = $instance->getValue('0010000B');
+        $this->assertCount(3, $otherIds);
+
+        // Validate first item
+        $item1 = $otherIds[0];
+        $this->assertEquals('AltID1', $item1['00100020']->getFirstValue());
+        $this->assertEquals('HospitalA', $item1['00100021']->getFirstValue());
+        $this->assertEquals('TEXT', $item1['00100022']->getFirstValue());
+
+        // Validate second item
+        $item2 = $otherIds[1];
+        $this->assertEquals('AltID2', $item2['00100020']->getFirstValue());
+        $this->assertIsArray($item2['00100024']->getValue());
+        $this->assertEquals('NationalID', $item2['00100024']->getValue()[0]['00400032']->getFirstValue());
+        $this->assertEquals('AU', $item2['00100024']->getValue()[0]['00400033']->getFirstValue());
+
+        // Validate third item
+        $item3 = $otherIds[2];
+        $this->assertEquals('AltID3', $item3['00100020']->getFirstValue());
+    }
+
+    public function testGetValueByName(): void
+    {
+        // Preload minimal dictionary
+        $loader = new DicomTagLoader();
+        $loader->loadFromArray([
+            '00100020' => ['name' => 'PatientID', 'vr' => 'LO'],
+            '00180084' => ['name' => 'ImagingFrequency', 'vr' => 'DS'],
+        ]);
+
+        DicomDictionary::preload($loader); // ensure global lookup works
+
+        $metadata = [[
+            '00100010' => ['vr' => 'PN', 'Value' => [['Alphabetic' => 'Doe^Jane']]],
+            '00100020' => ['vr' => 'LO', 'Value' => ['P123']],
+            '00180084' => ['vr' => 'DS', 'Value' => ['63.87']],
+            '0020000D' => ['vr' => 'UI', 'Value' => ['1.2.3.4']],
+            '0020000E' => ['vr' => 'UI', 'Value' => ['1.2.3.4.1']],
+            '00080018' => ['vr' => 'UI', 'Value' => ['1.2.3.4.1.1']],
+        ]];
+
+
+        $instance = $this->parser->parseInstance($metadata);
+
+        $this->assertSame('63.87', $instance->getFirstValueByName('ImagingFrequency'));
+        $this->assertSame('P123', $instance->getFirstValueByName('PatientID'));
+    }
+
 }

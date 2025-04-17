@@ -88,17 +88,6 @@ class DicomInstance
     }
 
     /**
-     * Get the first value of an element by tag
-     *
-     * @param string $tag DICOM tag
-     * @return mixed|null
-     */
-    public function getFirstValue(string $tag): mixed
-    {
-        return $this->getElement($tag)?->getFirstValue();
-    }
-
-    /**
      * Magic method to access common attributes via getters
      *
      * @param string $method Method name
@@ -187,5 +176,43 @@ class DicomInstance
         }
 
         return $result;
+    }
+
+
+    /**
+     * Get the first value for a tag (e.g. '00100020').
+     *
+     * @param  string  $tag
+     * @return mixed
+     */
+    public function getFirstValue(string $tag): mixed
+    {
+        $element = $this->getElement($tag);
+        if ($element === null) {
+            return null;
+        }
+
+        $value = $element->getValue();
+
+        if (is_array($value)) {
+            return $value[0] ?? null;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Get the first value of a DICOM element by its attribute name (e.g. 'PatientID')
+     *
+     * @param  string  $key
+     * @return mixed
+     */
+    public function getFirstValueByName(string $key): mixed
+    {
+        $tag = preg_match('/^[0-9A-F]{8}$/i', $key)
+            ? $key
+            : DicomDictionary::getTagIdByName($key);
+
+        return $tag ? $this->getFirstValue($tag) : null;
     }
 }

@@ -2,10 +2,6 @@
 
 namespace Aurabx\DicomWebParser;
 
-use Aurabx\DicomWebParser\DicomElement;
-use Aurabx\DicomWebParser\DicomInstance;
-use Aurabx\DicomWebParser\DicomSeries;
-use Aurabx\DicomWebParser\DicomStudy;
 use Aurabx\DicomWebParser\Elements\AttributeTagParser;
 use Aurabx\DicomWebParser\Elements\BinaryParser;
 use Aurabx\DicomWebParser\Elements\DateParser;
@@ -15,7 +11,6 @@ use Aurabx\DicomWebParser\Elements\FloatingPointParser;
 use Aurabx\DicomWebParser\Elements\IntegerParser;
 use Aurabx\DicomWebParser\Elements\PersonNameParser;
 use Aurabx\DicomWebParser\Elements\TimeParser;
-use Aurabx\DicomWebParser\ParserException;
 
 /**
  * Main parser class for converting DICOMWeb JSON responses to PHP objects

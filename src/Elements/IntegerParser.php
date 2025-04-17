@@ -4,20 +4,14 @@ namespace Aurabx\DicomWebParser\Elements;
 
 class IntegerParser implements ElementParserInterface
 {
-
     public static function parse(array $element): mixed
     {
-        $result = [];
+        $value = $element['Value'] ?? null;
 
-        foreach ($element['Value'] as $isValue) {
-            // Attempt to convert string to integer
-            if (is_string($isValue)) {
-                $result[] = (int)$isValue;
-            } else {
-                $result[] = $isValue; // Keep as is if already numeric or other
-            }
+        if (is_array($value)) {
+            return array_map(static fn($v) => (string) $v, $value);
         }
 
-        return $result;
+        return $value !== null ? (string) $value : null;
     }
 }
