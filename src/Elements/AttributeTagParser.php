@@ -2,7 +2,7 @@
 
 namespace Aurabx\DicomWebParser\Elements;
 
-use Aurabx\DicomWebParser\DicomTag;
+use Aurabx\DicomWebParser\DicomModel\DicomTag;
 
 class AttributeTagParser implements ElementParserInterface
 {

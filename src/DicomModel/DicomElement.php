@@ -1,6 +1,6 @@
 <?php
 
-namespace Aurabx\DicomWebParser;
+namespace Aurabx\DicomWebParser\DicomModel;
 
 /**
  * Represents a DICOM element (attribute/value pair)

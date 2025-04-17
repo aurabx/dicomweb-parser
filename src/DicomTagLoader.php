@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Aurabx\DicomWebParser;
 
+use Aurabx\DicomWebParser\DicomModel\DicomTag;
+
 /**
  * Responsible for loading and providing access to DICOM tag definitions
  */

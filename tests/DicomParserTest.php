@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Aurabx\DicomWebParser\Tests;
 
 use Aurabx\DicomWebParser\DicomDictionary;
+use Aurabx\DicomWebParser\DicomModel\DicomInstance;
+use Aurabx\DicomWebParser\DicomModel\DicomStudy;
 use Aurabx\DicomWebParser\DicomTagLoader;
 use Aurabx\DicomWebParser\Parser;
-use Aurabx\DicomWebParser\DicomInstance;
-use Aurabx\DicomWebParser\DicomStudy;
 use Aurabx\DicomWebParser\ParserException;
 use PHPUnit\Framework\TestCase;
 
@@ -112,14 +112,13 @@ JSON;
         $instance = $this->parser->parseInstance($this->sampleJson);
 
         $this->assertInstanceOf(DicomInstance::class, $instance);
-        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789', $instance->getStudyInstanceUid());
-        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1', $instance->getSeriesInstanceUid());
-        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1.1', $instance->getSopInstanceUid());
-        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4', $instance->getSopClassUid());
-        $this->assertEquals('MR', $instance->getModality());
+        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789', $instance->getFirstValue('0020000D'));
+        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1', $instance->getFirstValue('0020000E'));
+        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1.1', $instance->getFirstValue('00080018'));
+        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4', $instance->getFirstValue('00080016'));
+        $this->assertEquals('MR', $instance->getFirstValue('00080060'));
         $this->assertEquals('12345678', $instance->getFirstValue('00100020'));
 
-        // Test patient name
         $patientName = $instance->getFirstValue('00100010');
         $this->assertIsArray($patientName);
         $this->assertEquals('Doe', $patientName['Alphabetic']['FamilyName']);
@@ -131,27 +130,25 @@ JSON;
         $study = $this->parser->parseStudy($this->sampleJson);
 
         $this->assertInstanceOf(DicomStudy::class, $study);
-        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789', $study->getStudyInstanceUid());
+        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789', $study->getFirstValue('0020000D'));
         $this->assertEquals(1, $study->getSeriesCount());
         $this->assertEquals(1, $study->getTotalInstanceCount());
         $this->assertEquals(['MR'], $study->getModalities());
-        $this->assertEquals('12345678', $study->getPatientId());
-        $this->assertEquals('BRAIN STUDY', $study->getStudyDescription());
+        $this->assertEquals('12345678', $study->getFirstValue('00100020'));
+        $this->assertEquals('BRAIN STUDY', $study->getFirstValue('00081030'));
 
-        // Test series
         $seriesList = $study->getSeries();
         $this->assertCount(1, $seriesList);
 
         $series = $seriesList[0];
-        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1', $series->getSeriesInstanceUid());
+        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1', $series->getFirstValue('0020000E'));
         $this->assertEquals(1, $series->getInstanceCount());
-        $this->assertEquals('MR', $series->getModality());
-        $this->assertEquals(1, $series->getSeriesNumber());
+        $this->assertEquals('MR', $series->getFirstValue('00080060'));
+        $this->assertEquals(1, $series->getFirstValue('00200011'));
 
-        // Test instances in series
         $instances = $series->getInstances();
         $this->assertCount(1, $instances);
-        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1.1', $instances[0]->getSopInstanceUid());
+        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1.1', $instances[0]->getFirstValue('00080018'));
     }
 
     public function testParseInvalidJson(): void
@@ -473,11 +470,11 @@ JSON;
 
         $study = $this->parser->parseStudy($metadata);
 
-        $this->assertInstanceOf(\Aurabx\DicomWebParser\DicomStudy::class, $study);
+        $this->assertInstanceOf(\Aurabx\DicomWebParser\DicomModel\DicomStudy::class, $study);
         $this->assertEquals($studyInstanceUid, $study->getStudyInstanceUid());
         $this->assertEquals(3, $study->getSeriesCount());
         $this->assertEquals(['CT', 'MR', 'CR'], array_values(array_unique($study->getModalities())));
-        $this->assertEquals('PatientID123', $study->getPatientId());
+        $this->assertEquals('PatientID123', $study->getFirstValue('00100020'));
 
         $series = $study->getSeries();
         $this->assertCount(3, $series);
@@ -488,6 +485,8 @@ JSON;
         $this->assertEquals('series-uid-3', $series[0]->getSeriesInstanceUid()); // Series number 1
         $this->assertEquals('series-uid-1', $series[1]->getSeriesInstanceUid()); // Series number 2
         $this->assertEquals('series-uid-2', $series[2]->getSeriesInstanceUid()); // Series number 3
+
+        echo print_r($study);
     }
 
     public function testComplexOtherPatientIdsSequence(): void
@@ -524,7 +523,7 @@ JSON;
         ];
 
         $instance = $this->parser->parseInstance($metadata);
-        $this->assertInstanceOf(\Aurabx\DicomWebParser\DicomInstance::class, $instance);
+        $this->assertInstanceOf(\Aurabx\DicomWebParser\DicomModel\DicomInstance::class, $instance);
 
         $otherIds = $instance->getValue('0010000B');
         $this->assertCount(3, $otherIds);

@@ -87,7 +87,7 @@ foreach ($seriesList as $series) {
 ```php
 <?php
 
-use Aurabx\DicomWebParser\DicomTag;
+use Aurabx\DicomWebParser\DicomModel\DicomTag;
 
 // Get the descriptive name for a tag
 $tagName = DicomTag::getName('00100010');  // Returns "PatientName"

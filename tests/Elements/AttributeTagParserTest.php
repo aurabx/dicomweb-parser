@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Aurabx\DicomWebParser\Tests\Elements;
 
 use Aurabx\DicomWebParser\Elements\AttributeTagParser;
-use Aurabx\DicomWebParser\DicomTag;
 use PHPUnit\Framework\TestCase;
 
 final class AttributeTagParserTest extends TestCase

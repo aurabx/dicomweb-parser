@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Aurabx\DicomWebParser\Tests;
 
 use Aurabx\DicomWebParser\Parser;
-use Aurabx\DicomWebParser\DicomInstance;
 use PHPUnit\Framework\TestCase;
 
 class NestedParserTest extends TestCase

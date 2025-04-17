@@ -2,6 +2,10 @@
 
 namespace Aurabx\DicomWebParser;
 
+use Aurabx\DicomWebParser\DicomModel\DicomElement;
+use Aurabx\DicomWebParser\DicomModel\DicomInstance;
+use Aurabx\DicomWebParser\DicomModel\DicomSeries;
+use Aurabx\DicomWebParser\DicomModel\DicomStudy;
 use Aurabx\DicomWebParser\Elements\AttributeTagParser;
 use Aurabx\DicomWebParser\Elements\BinaryParser;
 use Aurabx\DicomWebParser\Elements\DateParser;
@@ -77,7 +81,7 @@ class Parser
         // Group instances by series UID
         $seriesMap = [];
         foreach ($instances as $instance) {
-            $seriesUid = $instance->getSeriesInstanceUid();
+            $seriesUid = $instance->getFirstValue('0020000E');
             if (!isset($seriesMap[$seriesUid])) {
                 $seriesMap[$seriesUid] = [];
             }
@@ -96,7 +100,7 @@ class Parser
             throw new ParserException('No instances found to create study');
         }
 
-        return new DicomStudy($firstInstance->getStudyInstanceUid(), $seriesList);
+        return new DicomStudy($firstInstance->getFirstValue('0020000D'), $seriesList);
     }
 
     /**

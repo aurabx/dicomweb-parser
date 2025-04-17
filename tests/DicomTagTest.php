@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Aurabx\DicomWebParser\Tests;
 
-use Aurabx\DicomWebParser\DicomTag;
+use Aurabx\DicomWebParser\DicomModel\DicomTag;
 use PHPUnit\Framework\TestCase;
 
 class DicomTagTest extends TestCase

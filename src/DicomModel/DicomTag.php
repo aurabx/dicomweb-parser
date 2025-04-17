@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Aurabx\DicomWebParser;
+namespace Aurabx\DicomWebParser\DicomModel;
+
+use Aurabx\DicomWebParser\DicomTagLoader;
+use Aurabx\DicomWebParser\ParserException;
 
 /**
  * Utility class for working with DICOM tags
@@ -10,16 +13,15 @@ namespace Aurabx\DicomWebParser;
 class DicomTag
 {
     /**
-     * @var DicomTagLoader Tag loader instance
+     * @var DicomTagLoader|null Tag loader instance
      */
     private static ?DicomTagLoader $loader = null;
 
     /**
      * Initialize the DicomTag class with a specific tags file or directory
      *
-     * @param string $tagsPath Path to the tags JSON file or directory
+     * @param  string  $tagsPath  Path to the tags JSON file or directory
      * @return void
-     * @throws ParserException If the tags cannot be loaded
      */
     public static function init(string $tagsPath): void
     {
@@ -94,29 +96,26 @@ class DicomTag
      */
     public static function normalizeTag(string $tag): string
     {
-        // Remove any non-hexadecimal characters
         $normalized = preg_replace('/[^0-9A-Fa-f]/', '', $tag);
 
-        // Ensure it's 8 characters
-        if (strlen($normalized) === 8) {
-            return $normalized;
-        }
-
-        // If it's 4 characters (group only), add zeros for element
         if (strlen($normalized) === 4) {
-            return $normalized . '0000';
+            $normalized .= '0000';
         }
 
-        // Return whatever we have (may not be valid)
-        return $normalized;
+        if (strlen($normalized) !== 8) {
+            throw new ParserException("Invalid DICOM tag: $tag");
+        }
+
+        return strtoupper($normalized);
     }
 
     /**
      * Format a tag with a group/element separator
      *
-     * @param string $tag DICOM tag (e.g., "00100010")
-     * @param string $format Format specifier ('comma', 'paren', or 'both')
+     * @param  string  $tag  DICOM tag (e.g., "00100010")
+     * @param  string  $format  Format specifier ('comma', 'paren', or 'both')
      * @return string Formatted tag (e.g., "0010,0010" or "(0010,0010)")
+     * @throws ParserException
      */
     public static function formatTag(string $tag, string $format = 'comma'): string
     {
