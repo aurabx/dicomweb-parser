@@ -5,7 +5,7 @@ A PHP library for parsing DICOMWeb JSON responses into structured PHP objects.
 ## Requirements
 
 - PHP 8.2 or higher
-- ext-json
+- [aurabx/dicom-data](https://github.com/aurabx/dicom-data)
 
 ## Installation
 
@@ -87,7 +87,7 @@ foreach ($seriesList as $series) {
 ```php
 <?php
 
-use Aurabx\DicomWebParser\DicomModel\DicomTag;
+use Aurabx\DicomData\DicomTag;
 
 // Get the descriptive name for a tag
 $tagName = DicomTag::getName('00100010');  // Returns "PatientName"
@@ -100,40 +100,6 @@ $formattedTag = DicomTag::formatTag('00100010', 'both');   // Returns "(0010,001
 $vrMeaning = DicomTag::getVRMeaning('PN');  // Returns "Person Name"
 ```
 
-### Using the Tag Dictionary
-
-```php
-<?php
-
-use Aurabx\DicomWebParser\DicomDictionary;
-
-// Lookup tag ID by name
-$tagId = DicomDictionary::getTagIdByName('ImagingFrequency');  // Returns '00180084'
-
-// Get full metadata
-$info = DicomDictionary::getTagInfo('00180084');
-
-// Get tag VR or description
-$vr = DicomDictionary::getTagVR('00180084');
-$desc = DicomDictionary::getTagDescription('00180084');
-```
-
-### Testing with Custom Tags
-
-```php
-<?php
-
-use Aurabx\DicomWebParser\DicomTagLoader;
-use Aurabx\DicomWebParser\DicomDictionary;
-
-$loader = new DicomTagLoader();
-$loader->loadFromArray([
-    '00100020' => ['name' => 'PatientID', 'vr' => 'LO'],
-    '00180084' => ['name' => 'ImagingFrequency', 'vr' => 'DS'],
-]);
-
-DicomDictionary::preload($loader);
-```
 
 ## Key Features
 

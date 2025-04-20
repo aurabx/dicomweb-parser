@@ -42,7 +42,7 @@ final class TimeParserTest extends TestCase
 
         $result = TimeParser::parse($element);
 
-        $this->assertNull($result);
+        $this->assertNull($result[0]);
     }
 
     public function testReturnsNullIfValueIsNull(): void
@@ -51,6 +51,6 @@ final class TimeParserTest extends TestCase
 
         $result = TimeParser::parse($element);
 
-        $this->assertNull($result);
+        $this->assertNull($result[0]);
     }
 }

@@ -4,6 +4,7 @@ namespace Aurabx\DicomWebParser;
 
 use Aurabx\DicomWebParser\DicomModel\DicomElement;
 use Aurabx\DicomWebParser\DicomModel\DicomInstance;
+use Aurabx\DicomWebParser\DicomModel\DicomSequence;
 use Aurabx\DicomWebParser\DicomModel\DicomSeries;
 use Aurabx\DicomWebParser\DicomModel\DicomStudy;
 use Aurabx\DicomWebParser\Elements\AttributeTagParser;
@@ -115,7 +116,7 @@ class Parser
 
         foreach ($dataset as $tag => $element) {
             // Parse the tag and add the element to the instance
-            $instance->addElement($tag, $this->parseElement($element));
+            $instance->addElement($tag, $this->parseElement($element, $tag));
         }
 
         return $instance;
@@ -124,10 +125,11 @@ class Parser
     /**
      * Parse a DICOM element from the JSON representation with enhanced type handling
      *
-     * @param array $element DICOM element data
+     * @param  array  $element  DICOM element data
+     * @param  string  $tag
      * @return DicomElement
      */
-    protected function parseElement(array $element): DicomElement
+    protected function parseElement(array $element, string $tag): DicomElement
     {
         $vr = $element['vr'] ?? '';
         $value = null;
@@ -136,13 +138,21 @@ class Parser
         if (isset($element['Value'])) {
             switch ($vr) {
                 case 'SQ': // Sequence
+
                     $items = [];
-                    foreach ($element['Value'] as $item) {
-                        $itemElements = array_map(function ($itemElement) {
-                            return $this->parseElement($itemElement);
-                        }, $item);
-                        $items[] = $itemElements;
+
+                    foreach ($element['Value'] as $element_items) {
+                        $sequence = new DicomSequence();
+
+                        if(!empty($element_items)) {
+                            foreach ($element_items as $element_key => $element_item) {
+                                $sequence->addElement($element_key, $this->parseElement($element_item, $element_key));
+                            }
+                        }
+
+                        $items[] = $sequence;
                     }
+
                     $value = $items;
                     break;
 
@@ -200,9 +210,8 @@ class Parser
             }
         }
 
-        return new DicomElement($vr, $value);
+        return new DicomElement($tag, $vr, $value);
     }
-
 
     /**
      * Prepare JSON data for parsing

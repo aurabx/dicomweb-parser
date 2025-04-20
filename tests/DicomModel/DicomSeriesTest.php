@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\DicomWebParser\DicomModel;
 
-use Aurabx\DicomWebParser\TagNameResolverInterface;
+use Aurabx\DicomWebParser\DicomModel\DicomElement;
 use Aurabx\DicomWebParser\DicomModel\DicomInstance;
 use Aurabx\DicomWebParser\DicomModel\DicomSeries;
+use Aurabx\DicomWebParser\DicomTagService;
 use Aurabx\DicomWebParser\ParserException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +20,6 @@ final class DicomSeriesTest extends TestCase
         $series = new DicomSeries(
             instances: [],
             seriesInstanceUid: '1.2.3.4.5',
-            tagNameResolver: $this->mockResolver()
         );
 
         $this->assertSame('1.2.3.4.5', $series->getSeriesInstanceUid());
@@ -34,7 +34,6 @@ final class DicomSeriesTest extends TestCase
 
         $series = new DicomSeries(
             instances: [$instance],
-            tagNameResolver: $this->mockResolver()
         );
 
         $this->assertSame('9.9.9.9', $series->getSeriesInstanceUid());
@@ -44,7 +43,7 @@ final class DicomSeriesTest extends TestCase
     public function it_throws_if_no_uid_can_be_determined(): void
     {
         $this->expectException(ParserException::class);
-        new DicomSeries(instances: [], tagNameResolver: $this->mockResolver());
+        new DicomSeries(instances: []);
     }
 
     #[Test]
@@ -59,7 +58,6 @@ final class DicomSeriesTest extends TestCase
 
         $series = new DicomSeries(
             instances: [$instance],
-            tagNameResolver: $this->mockResolver()
         );
 
         $this->assertSame('MR', $series->getModality());
@@ -78,7 +76,6 @@ final class DicomSeriesTest extends TestCase
 
         $series = new DicomSeries(
             instances: [$instance],
-            tagNameResolver: $this->mockResolver()
         );
 
         $newInstance = clone $instance;
@@ -95,7 +92,6 @@ final class DicomSeriesTest extends TestCase
 
         $series = new DicomSeries(
             instances: [$instance],
-            tagNameResolver: $this->mockResolver()
         );
 
         $mismatch = $this->mockInstance(['0020000E' => 'SeriesB']);
@@ -112,7 +108,7 @@ final class DicomSeriesTest extends TestCase
         $inst2 = $this->mockInstance(['00200013' => 5]);
         $inst3 = $this->mockInstance(['00200013' => 10]);
 
-        $series = new DicomSeries([$inst1, $inst2, $inst3], '1.2.3.4.5', tagNameResolver: $this->mockResolver());
+        $series = new DicomSeries([$inst1, $inst2, $inst3], '1.2.3.4.5');
         $series->sortInstancesByNumber();
 
         $sorted = $series->getInstances();
@@ -122,44 +118,20 @@ final class DicomSeriesTest extends TestCase
     }
 
     #[Test]
-    public function it_exports_named_array_with_resolver(): void
+    public function it_exports_named_array(): void
     {
-        // Create a mock DicomElement that returns 'CT'
-        $element = $this->createMock(\Aurabx\DicomWebParser\DicomModel\DicomElement::class);
-        $element->method('getValue')->willReturn('CT');
+        $element = new DicomElement('00080060', 'CS', 'CT');
+        $instance = new DicomInstance();
+        $instance->addElement('00080060', $element);
 
-        // Create a mock DicomInstance
-        $instance = $this->createMock(\Aurabx\DicomWebParser\DicomModel\DicomInstance::class);
-        $instance->method('hasElement')->willReturn(true);
-        $instance->method('getElement')->willReturn($element);
-
-        // Create a mock TagNameResolver
-        $resolver = $this->createMock(TagNameResolverInterface::class);
-        $resolver->method('resolve')->willReturn('Modality');
-
-        // Build the DicomSeries with mocks
-        $series = new DicomSeries([$instance], '1.2.3.4.5', tagNameResolver: $resolver);
+        // Build the DicomSeries
+        $series = new DicomSeries([$instance], '1.2.3.4.5');
         $result = $series->toNamedArray();
 
         // Assert expected outcome
         $this->assertSame(['Modality' => 'CT'], $result);
     }
 
-
-    private function mockResolver(): TagNameResolverInterface
-    {
-        return new class implements TagNameResolverInterface {
-            public function resolve(string $tag): string
-            {
-                return "Resolved($tag)";
-            }
-
-            public function getTagIdByName(string $name): ?string
-            {
-                // TODO: Implement getTagIdByName() method.
-            }
-        };
-    }
 
     private function mockInstance(array $values): \PHPUnit\Framework\MockObject\MockObject
     {

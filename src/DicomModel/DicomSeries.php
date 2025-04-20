@@ -2,10 +2,8 @@
 
 namespace Aurabx\DicomWebParser\DicomModel;
 
-use Aurabx\DicomWebParser\DicomDictionary;
-use Aurabx\DicomWebParser\DicomDictionaryTagNameResolver;
+use Aurabx\DicomWebParser\DicomTagService;
 use Aurabx\DicomWebParser\ParserException;
-use Aurabx\DicomWebParser\TagNameResolverInterface;
 
 /**
  * Represents a DICOM series (collection of instances)
@@ -23,27 +21,27 @@ class DicomSeries
     private string $seriesInstanceUid;
 
     public array $seriesLevelTags = [
-        '0020,000E', // SeriesInstanceUID
-        '0020,0011', // SeriesNumber
-        '0008,103E', // SeriesDescription
-        '0008,0060', // Modality
-        '0008,1070', // OperatorsName
-        '0008,1090', // ManufacturerModelName
-        '0008,0070', // Manufacturer
-        '0018,0015', // BodyPartExamined
-        '0018,1030', // ProtocolName
-        '0018,0024', // SequenceName
-        '0018,0021', // EchoTrainLength
-        '0008,0021', // SeriesDate
-        '0008,0031', // SeriesTime
-        '0018,1060', // TriggerTime
-        '0018,0081', // EchoTime
-        '0008,1111', // ReferencedStudySequence
-        '0020,0020', // PatientOrientation
-        '0018,5100', // PatientPosition
+        '0020000E', // SeriesInstanceUID
+        '00200011', // SeriesNumber
+        '0008103E', // SeriesDescription
+        '00080060', // Modality
+        '00081070', // OperatorsName
+        '00081090', // ManufacturerModelName
+        '00080070', // Manufacturer
+        '00180015', // BodyPartExamined
+        '00181030', // ProtocolName
+        '00180024', // SequenceName
+        '00180021', // EchoTrainLength
+        '00080021', // SeriesDate
+        '00080031', // SeriesTime
+        '00181060', // TriggerTime
+        '00180081', // EchoTime
+        '00081111', // ReferencedStudySequence
+        '00200020', // PatientOrientation
+        '00185100', // PatientPosition
     ];
 
-    private TagNameResolverInterface $tagNameResolver;
+    private DicomTagService $dicomTagService;
 
     /**
      * Create a new DICOM series
@@ -55,10 +53,10 @@ class DicomSeries
     public function __construct(
         array $instances = [],
         ?string $seriesInstanceUid = null,
-        ?TagNameResolverInterface $tagNameResolver = null
+        ?DicomTagService $dicomTagService = null
     )
     {
-        $this->tagNameResolver = $tagNameResolver ?? new DicomDictionaryTagNameResolver();
+        $this->dicomTagService = $dicomTagService ?? new DicomTagService();
         $this->instances = $instances;
 
         if ($seriesInstanceUid) {
@@ -286,7 +284,7 @@ class DicomSeries
 
         foreach ($this->seriesLevelTags as $tag) {
             if ($first->hasElement($tag)) {
-                $result[$this->tagNameResolver->resolve($tag)] = $first->getElement($tag)?->getValue();
+                $result[$this->dicomTagService->getTagName($tag)] = $first->getElement($tag)?->getValue();
             }
         }
 

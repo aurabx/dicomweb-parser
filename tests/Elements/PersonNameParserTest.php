@@ -96,12 +96,12 @@ final class PersonNameParserTest extends TestCase
 
     public function testReturnsNullIfValueMissing(): void
     {
-        $this->assertNull(PersonNameParser::parse([]));
+        $this->assertEmpty(PersonNameParser::parse([]));
     }
 
     public function testReturnsNullIfValueIsNull(): void
     {
-        $this->assertNull(PersonNameParser::parse(['Value' => null]));
+        $this->assertEmpty(PersonNameParser::parse(['Value' => null]));
     }
 
     public function testReturnsEmptyArrayIfValueIsEmpty(): void

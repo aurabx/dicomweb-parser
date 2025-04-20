@@ -2,19 +2,20 @@
 
 namespace Aurabx\DicomWebParser\Elements;
 
-use Aurabx\DicomWebParser\DicomModel\DicomTag;
+use Aurabx\DicomData\DicomDictionary;
+use Aurabx\DicomData\DicomTag;
 
 class AttributeTagParser implements ElementParserInterface
 {
 
-    public static function parse(array $element): mixed
+    public static function parse(array $element): array
     {
         $result = [];
 
         foreach ($element['Value'] as $tagValue) {
             // If it's a string, normalize it
             if (is_string($tagValue)) {
-                $result[] = DicomTag::normalizeTag($tagValue);
+                $result[] = $tagValue;
             } else {
                 // For binary AT representation in JSON, might be an array of group/element
                 if (is_array($tagValue) && count($tagValue) === 2) {

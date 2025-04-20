@@ -42,7 +42,7 @@ final class DateParserTest extends TestCase
 
         $result = DateParser::parse($element);
 
-        $this->assertNull($result);
+        $this->assertEmpty($result);
     }
 
     public function testReturnsNullWhenValueIsNull(): void
@@ -51,7 +51,7 @@ final class DateParserTest extends TestCase
 
         $result = DateParser::parse($element);
 
-        $this->assertNull($result);
+        $this->assertEmpty($result);
     }
 
     public function testHandlesMixedTypes(): void

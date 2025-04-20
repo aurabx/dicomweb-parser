@@ -2,13 +2,16 @@
 
 namespace Aurabx\DicomWebParser\DicomModel;
 
+use Aurabx\DicomData\DicomDictionary;
+
 /**
  * Represents a DICOM element (attribute/value pair)
  */
 class DicomElement
 {
+    private string $tag;
     private string $vr;
-    private $value;
+    private DicomSequence|array|string|null $value;
 
     /**
      * Create a new DICOM element
@@ -16,8 +19,9 @@ class DicomElement
      * @param string $vr Value Representation (VR) code
      * @param mixed $value Element value(s)
      */
-    public function __construct(string $vr, mixed $value = null)
+    public function __construct(string $tag, string $vr, mixed $value = null)
     {
+        $this->tag = $tag;
         $this->vr = $vr;
         $this->value = $value;
     }
@@ -39,7 +43,15 @@ class DicomElement
      */
     public function getValue(): mixed
     {
-        return $this->value;
+        $element_settings = DicomDictionary::getTagInfo($this->tag);
+
+        if (empty($element_settings) ||
+            (array_key_exists('vm', $element_settings) && $element_settings['vm'] !== '1')
+        ) {
+            return $this->value;
+        }
+
+        return $this->getFirstValue();
     }
 
     /**

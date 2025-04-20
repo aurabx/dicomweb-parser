@@ -4,8 +4,47 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "19ca38ef16bc338809b8a2d7b3bff857",
-    "packages": [],
+    "content-hash": "077918a1542bde70ccb604fe35059115",
+    "packages": [
+        {
+            "name": "aurabx/dicom-data",
+            "version": "0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aurabx/dicom-data.git",
+                "reference": "924489ed810d369caa53a156d1ce4914a34d8e55"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aurabx/dicom-data/zipball/924489ed810d369caa53a156d1ce4914a34d8e55",
+                "reference": "924489ed810d369caa53a156d1ce4914a34d8e55",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^12.0",
+                "squizlabs/php_codesniffer": "^3.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Aurabx\\DicomData\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "support": {
+                "issues": "https://github.com/aurabx/dicom-data/issues",
+                "source": "https://github.com/aurabx/dicom-data/tree/0.5.0"
+            },
+            "time": "2025-04-20T07:14:32+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "myclabs/deep-copy",
@@ -1663,12 +1702,12 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": [],
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.0",
+        "php": ">=8.2",
         "ext-json": "*"
     },
     "platform-dev": [],

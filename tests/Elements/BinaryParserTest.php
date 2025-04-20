@@ -21,7 +21,7 @@ final class BinaryParserTest extends TestCase
 
         $result = BinaryParser::parse($element);
 
-        $this->assertSame($binaryData, $result);
+        $this->assertSame([$binaryData], $result);
     }
 
     public function testReturnsValueIfInlineBinaryIsNull(): void
@@ -47,6 +47,6 @@ final class BinaryParserTest extends TestCase
 
         $result = BinaryParser::parse($element);
 
-        $this->assertNull($result);
+        $this->assertEmpty($result);
     }
 }

@@ -2,9 +2,7 @@
 
 namespace Aurabx\DicomWebParser\DicomModel;
 
-use Aurabx\DicomWebParser\DicomDictionary;
-use Aurabx\DicomWebParser\DicomDictionaryTagNameResolver;
-use Aurabx\DicomWebParser\TagNameResolverInterface;
+use Aurabx\DicomWebParser\DicomTagService;
 
 /**
  * Represents a DICOM study (collection of series)
@@ -25,27 +23,40 @@ class DicomStudy
      * @var array|string[]
      */
     public array $studyLevelTags = [
-        '0020,000D', // StudyInstanceUID
-        '0008,0020', // StudyDate
-        '0008,0030', // StudyTime
-        '0008,0090', // ReferringPhysicianName
-        '0008,0050', // AccessionNumber
-        '0008,1030', // StudyDescription
-        '0010,0010', // PatientName
-        '0010,0020', // PatientID
-        '0010,0030', // PatientBirthDate
-        '0010,0040', // PatientSex
-        '0020,0010', // StudyID
-        '0032,1032', // RequestingPhysician
-        '0032,1060', // RequestedProcedureDescription
-        '0032,4000', // StudyComments
-        '0008,1048', // PhysiciansOfRecord
-        '0008,1060', // NameOfPhysiciansReadingStudy
-        '0032,1030', // ReasonForStudy
-        '0032,1070', // RequestedProcedurePriority
+        "0020000D", // StudyInstanceUID
+        "00080020", // StudyDate
+        "00080030", // StudyTime
+        "00080090", // ReferringPhysicianName
+        "00080050", // AccessionNumber
+        "00081030", // StudyDescription
+        "00100010", // PatientName
+        "00100020", // PatientID
+        "00101000", // OtherPatientIDs
+        "00100030", // PatientBirthDate
+        "00100040", // PatientSex
+        "00200010", // StudyID
+        "00321032", // RequestingPhysician
+        "00321060", // RequestedProcedureDescription
+        "00324000", // ImagingServiceRequestComments
+        "00081048", // PhysiciansOfRecord
+        "00081060", // NameOfPhysiciansReadingStudy
+        "00321030", // ReasonForStudy
+        "00321070", // RequestedProcedurePriority
+        "00080080", // InstitutionName
+        "00080081", // InstitutionAddress
+        "00080201", // TimezoneOffsetFromUTC
+        "00080021", // SeriesDate
+        "00080013", // SeriesTime
+        "00200011", // SeriesNumber
+        "00080022", // AcquisitionDate
+        "00080023", // ContentDate
+        "00080060", // Modality
+        "0008103E", // SeriesDescription
+        "0020000E", // SeriesInstanceUID
+        "00180015", // BodyPartExamined
     ];
 
-    private TagNameResolverInterface $tagNameResolver;
+    private DicomTagService $dicomTagService;
 
     /**
      * Create a new DICOM study
@@ -56,11 +67,11 @@ class DicomStudy
     public function __construct(
         string $studyInstanceUid,
         array $series = [],
-        ?TagNameResolverInterface $tagNameResolver = null
+        ?DicomTagService $tagNameResolver = null
     ) {
         $this->studyInstanceUid = $studyInstanceUid;
         $this->series = $series;
-        $this->tagNameResolver = $tagNameResolver ?? new DicomDictionaryTagNameResolver();
+        $this->dicomTagService = $tagNameResolver ?? new DicomTagService();
     }
 
     /**
@@ -174,9 +185,14 @@ class DicomStudy
      */
     public function getSeriesFlatArray(): array
     {
-        return array_map(static function ($series) {
-            return $series->toArray();
-        }, $this->series);
+        $result = [];
+        if (!empty($this->series)) {
+            foreach($this->series as $series) {
+                $result[] = $series->toArray();
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -186,9 +202,14 @@ class DicomStudy
      */
     public function getSeriesNamedFlatArray(): array
     {
-        return array_map(static function ($series) {
-            return $series->toNamedArray();
-        }, $this->series);
+        $result = [];
+        if (!empty($this->series)) {
+            foreach($this->series as $series) {
+                $result[] = $series->toNamedArray();
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -207,7 +228,7 @@ class DicomStudy
 
         foreach ($this->studyLevelTags as $tag) {
             if ($first->getFirstValue($tag)) {
-                $result[$tag] = $first->getFirstValue($tag)?->getValue();
+                $result[$tag] = $first->getFirstValue($tag);
             }
         }
 
@@ -230,7 +251,7 @@ class DicomStudy
 
         foreach ($this->studyLevelTags as $tag) {
             if ($first->getFirstValue($tag)) {
-                $result[$this->tagNameResolver->resolve($tag)] = $first->getFirstValue($tag)?->getValue();
+                $result[$this->dicomTagService->getTagName($tag)] = $first->getFirstValue($tag);
             }
         }
 

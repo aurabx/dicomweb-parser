@@ -6,7 +6,7 @@ use Aurabx\DicomWebParser\Elements\ElementParserInterface;
 
 class DateParser implements ElementParserInterface
 {
-    public static function parse(array $element): mixed
+    public static function parse(array $element): array
     {
         $value = $element['Value'] ?? null;
 
@@ -14,6 +14,6 @@ class DateParser implements ElementParserInterface
             return array_map(static fn($v) => (string) $v, $value);
         }
 
-        return $value !== null ? (string) $value : null;
+        return $value !== null ? [(string) $value] : [];
     }
 }

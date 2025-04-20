@@ -40,7 +40,7 @@ final class DecimalParserTest extends TestCase
     {
         $result = DecimalParser::parse([]);
 
-        $this->assertNull($result);
+        $this->assertNull($result[0]);
     }
 
     public function testReturnsNullIfValueIsNull(): void
@@ -49,6 +49,6 @@ final class DecimalParserTest extends TestCase
 
         $result = DecimalParser::parse($element);
 
-        $this->assertNull($result);
+        $this->assertNull($result[0]);
     }
 }

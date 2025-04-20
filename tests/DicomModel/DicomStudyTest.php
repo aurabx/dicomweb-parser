@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\DicomWebParser\DicomModel;
 
-use Aurabx\DicomWebParser\DicomModel\DicomStudy;
+use Aurabx\DicomData\TagNameResolverInterface;
 use Aurabx\DicomWebParser\DicomModel\DicomSeries;
-use Aurabx\DicomWebParser\DicomDictionary;
-use Aurabx\DicomWebParser\TagNameResolverInterface;
+use Aurabx\DicomWebParser\DicomModel\DicomStudy;
 use PHPUnit\Framework\TestCase;
 
 final class DicomStudyTest extends TestCase

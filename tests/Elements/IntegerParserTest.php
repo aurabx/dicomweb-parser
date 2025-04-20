@@ -33,7 +33,7 @@ final class IntegerParserTest extends TestCase
 
         $result = IntegerParser::parse($element);
 
-        $this->assertNull($result);
+        $this->assertNull($result[0]);
     }
 
     public function testReturnsNullWhenValueIsNull(): void
@@ -42,7 +42,7 @@ final class IntegerParserTest extends TestCase
 
         $result = IntegerParser::parse($element);
 
-        $this->assertNull($result);
+        $this->assertNull($result[0]);
     }
 
     public function testReturnsEmptyArrayWhenValueIsEmpty(): void

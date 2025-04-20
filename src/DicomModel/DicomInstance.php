@@ -2,9 +2,7 @@
 
 namespace Aurabx\DicomWebParser\DicomModel;
 
-use Aurabx\DicomWebParser\DicomDictionary;
-use Aurabx\DicomWebParser\DicomDictionaryTagNameResolver;
-use Aurabx\DicomWebParser\TagNameResolverInterface;
+use Aurabx\DicomWebParser\DicomTagService;
 
 /**
  * Represents a DICOM instance (single image or object)
@@ -16,12 +14,12 @@ class DicomInstance
      */
     private array $elements = [];
 
-    private TagNameResolverInterface $tagNameResolver;
+    private DicomTagService $dicomTagService;
 
     public function __construct(
-        ?TagNameResolverInterface $tagNameResolver = null
+        ?DicomTagService $tagNameResolver = null
     ) {
-        $this->tagNameResolver = $tagNameResolver ?? new DicomDictionaryTagNameResolver();
+        $this->dicomTagService = $tagNameResolver ?? new DicomTagService();
     }
 
     /**
@@ -93,9 +91,7 @@ class DicomInstance
             return null;
         }
 
-        $value = $element->getValue();
-
-        return is_array($value) ? ($value[0] ?? null) : $value;
+        return $element->getValue();
     }
 
     /**
@@ -108,7 +104,7 @@ class DicomInstance
     {
         $tag = preg_match('/^[0-9A-F]{8}$/i', $key)
             ? $key
-            : $this->tagNameResolver->getTagIdByName($key);
+            : $this->dicomTagService->getTagIdByName($key);
 
         return $tag ? $this->getFirstValue($tag) : null;
     }
@@ -142,7 +138,7 @@ class DicomInstance
         $result = [];
 
         foreach ($this->elements as $tag => $element) {
-            $result[$this->tagNameResolver->resolve($tag)] = [
+            $result[$this->dicomTagService->getTagName($tag)] = [
                 'vr' => $element->getVR(),
                 'value' => $element->getValue()
             ];
@@ -178,25 +174,10 @@ class DicomInstance
         $result = [];
 
         foreach ($this->elements as $tag => $element) {
-            $result[$this->tagNameResolver->resolve($tag)] = $element->getValue();
+            $result[$this->dicomTagService->getTagName($tag)] = $element->getValue();
         }
 
         return $result;
-    }
-
-    #[Test]
-    public function it_resolves_tag_name_to_id_using_resolver(): void
-    {
-        $element = $this->createMock(DicomElement::class);
-        $element->method('getValue')->willReturn('ABC123');
-
-        $resolver = $this->createMock(TagNameResolverInterface::class);
-        $resolver->method('getTagIdByName')->willReturn('00100020');
-
-        $instance = new DicomInstance(tagNameResolver: $resolver);
-        $instance->addElement('00100020', $element);
-
-        $this->assertSame('ABC123', $instance->getFirstValueByName('PatientID'));
     }
 
 }

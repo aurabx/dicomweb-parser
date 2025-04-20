@@ -38,7 +38,7 @@ final class DateTimeTest extends TestCase
 
         $result = DateTime::parse($element);
 
-        $this->assertNull($result);
+        $this->assertEmpty($result);
     }
 
     public function testReturnsNullWhenValueIsNull(): void
@@ -47,7 +47,7 @@ final class DateTimeTest extends TestCase
 
         $result = DateTime::parse($element);
 
-        $this->assertNull($result);
+        $this->assertEmpty($result);
     }
 
     public function testHandlesEmptyArray(): void

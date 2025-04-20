@@ -4,12 +4,12 @@ namespace Aurabx\DicomWebParser\Elements;
 
 class PersonNameParser implements ElementParserInterface
 {
-    public static function parse(array $element): mixed
+    public static function parse(array $element): array
     {
         $value = $element['Value'] ?? null;
 
         if (!is_array($value)) {
-            return null;
+            return [];
         }
 
         return array_map(static function ($v) {

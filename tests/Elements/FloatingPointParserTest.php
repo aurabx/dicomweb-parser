@@ -33,7 +33,7 @@ final class FloatingPointParserTest extends TestCase
 
         $result = FloatingPointParser::parse($element);
 
-        $this->assertNull($result);
+        $this->assertNull($result[0]);
     }
 
     public function testReturnsNullIfValueIsExplicitlyNull(): void
@@ -42,7 +42,7 @@ final class FloatingPointParserTest extends TestCase
 
         $result = FloatingPointParser::parse($element);
 
-        $this->assertNull($result);
+        $this->assertNull($result[0]);
     }
 
     public function testCastsNonStringsToStrings(): void
