@@ -22,7 +22,7 @@
         }
     },
     "scripts": {
-        "test": "phpunit",
+        "test": "php -d memory_limit=1G ./vendor/bin/phpunit",
         "check-style": "phpcs src tests",
         "fix-style": "phpcbf src tests"
     },
