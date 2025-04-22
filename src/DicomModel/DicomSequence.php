@@ -2,11 +2,19 @@
 
 namespace Aurabx\DicomWebParser\DicomModel;
 
-use Aurabx\DicomWebParser\DicomTagService;
 use Aurabx\DicomWebParser\ParserOptions;
 
 class DicomSequence
 {
+    public string $tag;
+
+
+    public function __construct(
+        string $tag,
+    ) {
+        $this->tag = $tag;
+    }
+
     /**
      * @var array<DicomSequenceItem>
      */

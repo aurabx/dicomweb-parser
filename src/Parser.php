@@ -139,7 +139,7 @@ class Parser
         if (isset($element['Value'])) {
             switch ($vr) {
                 case 'SQ': // Sequence
-                    $sequence = new DicomSequence();
+                    $sequence = new DicomSequence($tag);
 
                     foreach ($element['Value'] as $element_items) {
                         $item = new DicomSequenceItem();
