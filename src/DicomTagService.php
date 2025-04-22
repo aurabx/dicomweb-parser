@@ -111,11 +111,22 @@ class DicomTagService
      * @param  string  $tagId
      * @return string|null
      */
-    public function getTagVR(string $tagId): ?string
+    public function getTagVr(string $tagId): ?string
     {
         $tag = $this->getTagInfo($tagId);
 
         return $this->dataGet('valueRepresentation', $tag);
+    }
+
+    /**
+     * @param  string  $tagId
+     * @return string|null
+     */
+    public function getTagVm(string $tagId): ?string
+    {
+        $tag = $this->getTagInfo($tagId);
+
+        return $this->dataGet('valueMultiplicity', $tag);
     }
 
     /**
