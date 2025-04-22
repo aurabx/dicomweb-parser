@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Aurabx\DicomWebParser\Tests\Elements;
+namespace Aurabx\DicomWebParser\Tests\Unit\Elements;
 
 use Aurabx\DicomWebParser\Elements\FloatingPointParser;
 use PHPUnit\Framework\TestCase;

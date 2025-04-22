@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Aurabx\DicomWebParser\Tests;
+namespace Aurabx\DicomWebParser\Tests\Feature;
 
 use Aurabx\DicomData\DicomDictionary;
 use Aurabx\DicomData\DicomTagLoader;
@@ -112,14 +112,14 @@ JSON;
         $instance = $this->parser->parseInstance($this->sampleJson);
 
         $this->assertInstanceOf(DicomInstance::class, $instance);
-        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789', $instance->getFirstValue('0020000D'));
-        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1', $instance->getFirstValue('0020000E'));
-        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1.1', $instance->getFirstValue('00080018'));
-        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4', $instance->getFirstValue('00080016'));
-        $this->assertEquals('MR', $instance->getFirstValue('00080060'));
-        $this->assertEquals('12345678', $instance->getFirstValue('00100020'));
+        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789', $instance->getElementFirstValue('0020000D'));
+        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1', $instance->getElementFirstValue('0020000E'));
+        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1.1', $instance->getElementFirstValue('00080018'));
+        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4', $instance->getElementFirstValue('00080016'));
+        $this->assertEquals('MR', $instance->getElementFirstValue('00080060'));
+        $this->assertEquals('12345678', $instance->getElementFirstValue('00100020'));
 
-        $patientName = $instance->getFirstValue('00100010');
+        $patientName = $instance->getElementFirstValue('00100010');
         $this->assertIsArray($patientName);
         $this->assertEquals('Doe', $patientName['Alphabetic']['FamilyName']);
         $this->assertEquals('Jane', $patientName['Alphabetic']['GivenName']);
@@ -140,7 +140,7 @@ JSON;
         $seriesList = $study->getSeries();
         $this->assertCount(1, $seriesList);
 
-        $series = $seriesList[0];
+        $series = $study->getFirstSeries();
         $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1', $series->getFirstValue('0020000E'));
         $this->assertEquals(1, $series->getInstanceCount());
         $this->assertEquals('MR', $series->getFirstValue('00080060'));
@@ -148,7 +148,7 @@ JSON;
 
         $instances = $series->getInstances();
         $this->assertCount(1, $instances);
-        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1.1', $instances[0]->getFirstValue('00080018'));
+        $this->assertEquals('1.2.840.10008.5.1.4.1.1.4.1.123456789.1.1', $series->getFirstInstance()->getElementValue('00080018'));
     }
 
     public function testParseInvalidJson(): void
@@ -166,7 +166,7 @@ JSON;
     public function testDateParsing(): void
     {
         $instance = $this->parser->parseInstance($this->sampleJson);
-        $studyDate = $instance->getFirstValue('00080020');
+        $studyDate = $instance->getElementFirstValue('00080020');
 
         // The date should be parsed as a DateTimeImmutable
         if ($studyDate instanceof \DateTimeImmutable) {
@@ -276,11 +276,7 @@ JSON;
         {
           "00400009": {
             "vr": "SH",
-            "Value": ["SCHEDULED", "ARRIVED"]
-          },
-          "00400020": {
-            "vr": "CS",
-            "Value": ["READY", "IN_PROGRESS"]
+            "Value": ["SCHEDULED"]
           },
           "00081060": {
             "vr": "PN",
@@ -309,15 +305,14 @@ JSON;
         $instance = $this->parser->parseInstance($jsonWithSequence);
 
         /* @var \Aurabx\DicomWebParser\DicomModel\DicomSequence $sequence */
-        $sequence = $instance->getValue('00400275');
+        $sequence = $instance->getElementValue('00400275');
 
         $this->assertIsObject($sequence);
-        $this->assertCount(3, $sequence->getElements());
+        $this->assertCount(1, $sequence->getItems());
 
-        $this->assertEquals(['SCHEDULED', 'ARRIVED'], $sequence->getElement('00400009')->getValue());
-        $this->assertEquals(['READY', 'IN_PROGRESS'], $sequence->getElement('00400020')->getValue());
+        $this->assertEquals('SCHEDULED', $sequence->getItem(0)->getElement('00400009')->getValue());
 
-        $names = $sequence->getElement('00081060')->getValue();
+        $names = $sequence->getItem(0)->getElement('00081060')->getValue();
         $this->assertCount(2, $names);
         $this->assertEquals($names[0]['Alphabetic']['FamilyName'], 'DR');
         $this->assertEquals($names[0]['Alphabetic']['GivenName'], 'WHO');
@@ -341,33 +336,15 @@ JSON;
           }
         }
       ]
-    },
-    "0020000D": {
-      "vr": "UI",
-      "Value": [
-        "1.2.3.4.5"
-      ]
-    },
-    "0020000E": {
-      "vr": "UI",
-      "Value": [
-        "1.2.3.4.5.1"
-      ]
-    },
-    "00080018": {
-      "vr": "UI",
-      "Value": [
-        "1.2.3.4.5.1.1"
-      ]
     }
   }
 ]
 JSON;
 
         $instance = $this->parser->parseInstance($jsonWithMultiValues);
-        $procedureCodeSequence = $instance->getValue('00081032');
+        $procedureCodeSequence = $instance->getElementValue('00081032');
 
-        $firstItem = $procedureCodeSequence->getElement('00080100');
+        $firstItem = $procedureCodeSequence->getItem(0)->getElement('00080100');
 
         $this->assertEquals('CODE1', $firstItem->getValue());
     }
@@ -456,8 +433,6 @@ JSON;
         $this->assertEquals('series-uid-3', $series[0]->getSeriesInstanceUid()); // Series number 1
         $this->assertEquals('series-uid-1', $series[1]->getSeriesInstanceUid()); // Series number 2
         $this->assertEquals('series-uid-2', $series[2]->getSeriesInstanceUid()); // Series number 3
-
-        echo print_r($study);
     }
 
     public function testComplexOtherPatientIdsSequence(): void
@@ -468,7 +443,7 @@ JSON;
                 '0020000E' => ['vr' => 'UI', 'Value' => ['1.2.3.4']],
                 '00080018' => ['vr' => 'UI', 'Value' => ['1.2.3.4.5']],
                 '00100020' => ['vr' => 'LO', 'Value' => ['PrimaryID']],
-                '0010000B' => [
+                '00101002' => [ // Other Patient IDs Sequence
                     'vr' => 'SQ',
                     'Value' => [
                         [
@@ -483,11 +458,8 @@ JSON;
                                     '00400032' => ['vr' => 'LO', 'Value' => ['NationalID']],
                                     '00400033' => ['vr' => 'LO', 'Value' => ['AU']]
                                 ]
-                            ]]
-                        ],
-                        [
-                            '00100020' => ['vr' => 'LO', 'Value' => ['AltID3']]
-                        ]
+                            ]
+                        ]]
                     ]
                 ]
             ]
@@ -497,26 +469,22 @@ JSON;
         $this->assertInstanceOf(\Aurabx\DicomWebParser\DicomModel\DicomInstance::class, $instance);
 
         /* @var \Aurabx\DicomWebParser\DicomModel\DicomSequence $otherIds */
-        $otherIds = $instance->getValue('0010000B');
-        $this->assertIsArray($otherIds);
+        $otherIds = $instance->getElementValue('00101002');
+        $this->assertInstanceOf(\Aurabx\DicomWebParser\DicomModel\DicomSequence::class, $otherIds);
 
         // Validate first item
-        $item1 = $otherIds[0];
-        $this->assertEquals('AltID1', $item1->getValue('00100020'));
-        $this->assertEquals('HospitalA', $item1->getValue('00100021'));
-        $this->assertEquals('TEXT', $item1->getValue('00100022'));
+        $item1 = $otherIds->getItem(0);
+        $this->assertEquals('AltID1', $item1->getElementValue('00100020'));
+        $this->assertEquals('HospitalA', $item1->getElementValue('00100021'));
+        $this->assertEquals('TEXT', $item1->getElementValue('00100022'));
 
         // Validate second item
-        $item2 = $otherIds[1];
-        $this->assertEquals('AltID2', $item2->getValue('00100020'));
+        $item2 = $otherIds->getItem(1);
+        $this->assertEquals('AltID2', $item2->getElementValue('00100020'));
 
-        $issuer = $item2->getValue('00100024');
-        $this->assertEquals('NationalID', $issuer->getValue('00400032'));
-        $this->assertEquals('AU', $issuer->getValue('00400033'));
-
-        // Validate third item
-        $item3 = $otherIds[2];
-        $this->assertEquals('AltID3', $item3->getValue('00100020'));
+        $issuer = $item2->getElementValue('00100024');
+        $this->assertEquals('NationalID', $issuer->getItem(0)->getElementValue('00400032'));
+        $this->assertEquals('AU', $issuer->getItem(0)->getElementValue('00400033'));
     }
 
     public function testGetValueByName(): void
@@ -542,8 +510,8 @@ JSON;
 
         $instance = $this->parser->parseInstance($metadata);
 
-        $this->assertSame('63.87', $instance->getFirstValueByName('ImagingFrequency'));
-        $this->assertSame('P123', $instance->getFirstValueByName('PatientID'));
+        $this->assertSame('63.87', $instance->getElementFirstValueByKeyword('ImagingFrequency'));
+        $this->assertSame('P123', $instance->getElementFirstValueByKeyword('PatientID'));
     }
 
     public function testEmptySequences(): void
@@ -591,7 +559,7 @@ JSON;
         $instance = $this->parser->parseInstance($jsonWithEmptySequence);
 
         // Test that the empty sequence is properly handled
-        $otherIdsSequence = $instance->getValue('00101002');
+        $otherIdsSequence = $instance->getElementValue('00101002');
         $this->assertNull($otherIdsSequence);
 
         // Check that the element exists but has no value

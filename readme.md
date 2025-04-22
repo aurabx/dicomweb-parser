@@ -39,11 +39,11 @@ echo "Series Instance UID: " . $firstInstance->getSeriesInstanceUid() . "\n";
 echo "Modality: " . $firstInstance->getModality() . "\n";
 
 // Access any DICOM tag by its tag ID
-$patientId = $firstInstance->getFirstValue('00100020');
+$patientId = $firstInstance->getElementFirstValue('00100020');
 echo "Patient ID: " . $patientId . "\n";
 
 // Access a DICOM tag by its standard name
-$modality = $firstInstance->getFirstValueByName('Modality');
+$modality = $firstInstance->getElementFirstValueByKeyword('Modality');
 echo "Modality: " . $modality . "\n";
 
 // Parse the response into a study structure

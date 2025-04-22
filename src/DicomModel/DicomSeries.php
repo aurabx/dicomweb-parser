@@ -4,6 +4,7 @@ namespace Aurabx\DicomWebParser\DicomModel;
 
 use Aurabx\DicomWebParser\DicomTagService;
 use Aurabx\DicomWebParser\ParserException;
+use Aurabx\DicomWebParser\ParserOptions;
 
 /**
  * Represents a DICOM series (collection of instances)
@@ -75,16 +76,6 @@ class DicomSeries
     }
 
     /**
-     * Get all instances in this series
-     *
-     * @return array<DicomInstance>
-     */
-    public function getInstances(): array
-    {
-        return $this->instances;
-    }
-
-    /**
      * Add an instance to this series
      *
      * @param DicomInstance $instance
@@ -93,7 +84,7 @@ class DicomSeries
      */
     public function addInstance(DicomInstance $instance): self
     {
-        $instanceSeriesUid = $instance->getFirstValueByName('SeriesInstanceUID');
+        $instanceSeriesUid = $instance->getElementFirstValueByKeyword('SeriesInstanceUID');
 
         if ($instanceSeriesUid !== $this->seriesInstanceUid) {
             throw new ParserException(
@@ -167,7 +158,7 @@ class DicomSeries
 
         foreach ($this->instances as $instance) {
             if ($instance->hasElement($tag)) {
-                return $instance->getFirstValue($tag);
+                return $instance->getElementFirstValue($tag);
             }
         }
 
@@ -182,8 +173,8 @@ class DicomSeries
     public function sortInstancesByNumber(): self
     {
         usort($this->instances, static function(DicomInstance $a, DicomInstance $b) {
-            $aNum = $a->getFirstValue('00200013');
-            $bNum = $b->getFirstValue('00200013');
+            $aNum = $a->getElementFirstValue('00200013');
+            $bNum = $b->getElementFirstValue('00200013');
 
             $aNum = $aNum !== null ? (int)$aNum : 0;
             $bNum = $bNum !== null ? (int)$bNum : 0;
@@ -195,22 +186,28 @@ class DicomSeries
     }
 
     /**
+     * @return bool
+     */
+    public function hasInstances(): bool
+    {
+        return !empty($this->instances);
+    }
+
+    /**
+     * Get all instances in this series
+     *
      * @return array<DicomInstance>
      */
-    public function getSeriesInstances(): array
+    public function getInstances(): array
     {
-        $instances = [];
-        foreach ($this->instances as $instance) {
-            $instances[] = $instance->getElements();
-        }
-        return $instances;
+        return $this->instances;
     }
 
     /**
      * @param  string  $index
      * @return DicomInstance|null
      */
-    public function getSeriesInstance(string $index): ?DicomInstance
+    public function getInstance(string $index): ?DicomInstance
     {
         if (!empty($this->instances)) {
             if (array_key_exists($index, $this->instances)) {
@@ -222,27 +219,15 @@ class DicomSeries
     }
 
     /**
-     * Convert instance to flat array (tag → string value)
-     *
-     * @return array<string, string>
+     * @return DicomInstance|null
      */
-    public function getSeriesInstancesFlatArray(): array
+    public function getFirstInstance(): ?DicomInstance
     {
-        return array_map(static function ($instance) {
-            return $instance->toFlatArray();
-        }, $this->instances);
-    }
+        if (!empty($this->instances)) {
+            return reset($this->instances);
+        }
 
-    /**
-     * Convert instance to flat array (tag → string value)
-     *
-     * @return array<string, string>
-     */
-    public function getSeriesInstancesNamedFlatArray(): array
-    {
-        return array_map(static function ($instance) {
-            return $instance->toNamedFlatArray();
-        }, $this->instances);
+        return null;
     }
 
     /**
@@ -250,46 +235,17 @@ class DicomSeries
      *
      * @return array<string, array{vr: string, value: mixed}>
      */
-    public function toArray(): array
+    public function toArray(string $keys = ParserOptions::USE_TAGS, array $tags = []): array
     {
-        $result = [];
+        if (!$this->hasInstances()) {
+            return [];
+        }
 
-        $first = $this->getSeriesInstance(0);
+        $first = $this->getInstance(0);
         if ($first === null) {
             return [];
         }
 
-        foreach ($this->seriesLevelTags as $tag) {
-            if ($first->hasElement($tag)) {
-                $result[$tag] = $first->getElement($tag)?->getValue();
-            }
-        }
-
-        return $result;
+        return $first->toArray($keys, $tags);
     }
-
-    /**
-     * Convert instance to array with tag → [vr, value]
-     *
-     * @return array<string, array{vr: string, value: mixed}>
-     */
-    public function toNamedArray(): array
-    {
-        $result = [];
-
-        $first = $this->getSeriesInstance(0);
-        if ($first === null) {
-            return [];
-        }
-
-        foreach ($this->seriesLevelTags as $tag) {
-            if ($first->hasElement($tag)) {
-                $result[$this->dicomTagService->getTagName($tag)] = $first->getElement($tag)?->getValue();
-            }
-        }
-
-        return $result;
-    }
-
-
 }

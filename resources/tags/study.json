@@ -1,7 +1,0 @@
-{
-    "0020000D": {
-        "name": "StudyInstanceUID",
-        "vr": "UI",
-        "description": "Unique identifier for the study"
-    }
-}

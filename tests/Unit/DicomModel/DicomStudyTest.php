@@ -2,15 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\DicomWebParser\DicomModel;
+namespace Aurabx\DicomWebParser\Tests\Unit\DicomModel;
 
-use Aurabx\DicomData\TagNameResolverInterface;
 use Aurabx\DicomWebParser\DicomModel\DicomSeries;
 use Aurabx\DicomWebParser\DicomModel\DicomStudy;
+use Aurabx\DicomWebParser\ParserOptions;
+use Aurabx\DicomWebParser\Tests\HasTestData;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 final class DicomStudyTest extends TestCase
 {
+    use HasTestData;
+
     #[Test]
     public function it_stores_and_returns_study_instance_uid(): void
     {
@@ -91,88 +95,6 @@ final class DicomStudyTest extends TestCase
         $study = new DicomStudy(studyInstanceUid: '1.2.3.4', series: [$series]);
 
         $this->assertSame($series, $study->getSeries('0'));
-    }
-
-    #[Test]
-    public function it_returns_series_flat_array(): void
-    {
-        $series = $this->createMock(DicomSeries::class);
-        $series->method('toArray')->willReturn(['0008,0050' => 'ACC123']);
-
-        $study = new DicomStudy(studyInstanceUid: '1.2.3.4', series: [$series]);
-
-        $this->assertSame([['0008,0050' => 'ACC123']], $study->getSeriesFlatArray());
-    }
-
-    #[Test]
-    public function it_returns_named_flat_array(): void
-    {
-        $series = $this->createMock(DicomSeries::class);
-        $series->method('toNamedArray')->willReturn(['AccessionNumber' => 'ACC123']);
-
-        $study = new DicomStudy(studyInstanceUid: '1.2.3.4', series: [$series]);
-
-        $this->assertSame([['AccessionNumber' => 'ACC123']], $study->getSeriesNamedFlatArray());
-    }
-
-    #[Test]
-    public function it_returns_array_of_values_for_study_level_tags(): void
-    {
-        $mockValue = new class {
-            public function getValue(): string
-            {
-                return 'TestValue';
-            }
-        };
-
-        $series = $this->createMock(DicomSeries::class);
-        $series->method('getFirstValue')->willReturn($mockValue);
-
-        $study = new DicomStudy(studyInstanceUid: '1.2.3.4', series: [$series]);
-
-        $array = $study->toArray();
-
-        $this->assertArrayHasKey('0020,000D', $array);
-        $this->assertSame('TestValue', $array['0020,000D']);
-    }
-
-    #[Test]
-    public function it_returns_named_array_of_values_using_tag_name_resolver(): void
-    {
-        // Create a fake ValueObject
-        $mockValueObject = new class {
-            public function getValue(): string
-            {
-                return 'HelloWorld';
-            }
-        };
-
-        // Create a mock DicomSeries that returns our fake ValueObject
-        $series = $this->createMock(DicomSeries::class);
-        $series->method('getFirstValue')->willReturn($mockValueObject);
-
-        // Create a mock tag name resolver
-        $resolver = $this->createMock(TagNameResolverInterface::class);
-        $resolver->method('resolve')->willReturnCallback(
-            fn(string $tag) => "Resolved($tag)"
-        );
-
-        // Instantiate DicomStudy with resolver
-        $study = new DicomStudy(
-            studyInstanceUid: '1.2.3.4',
-            series: [$series],
-            tagNameResolver: $resolver
-        );
-
-        $result = $study->toNamedArray();
-
-        // Check if at least one tag was resolved
-        $this->assertNotEmpty($result);
-
-        foreach ($result as $key => $value) {
-            $this->assertStringStartsWith('Resolved(', $key);
-            $this->assertSame('HelloWorld', $value);
-        }
     }
 
 }

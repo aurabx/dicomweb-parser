@@ -73,7 +73,18 @@ class DicomTagService
      */
     public function getTagInfo(string $tagId): ?array
     {
-        return $this->dicomTagLoader->getTag($tagId);
+        return $this->dicomTagLoader->getAttribute($tagId);
+    }
+
+    /**
+     * @param  string  $tagId
+     * @return string|null
+     */
+    public function getTagKeyword(string $tagId): ?string
+    {
+        $tag = $this->getTagInfo($tagId);
+
+        return $this->dataGet('keyword', $tag);
     }
 
     /**
@@ -88,12 +99,12 @@ class DicomTagService
     }
 
     /**
-     * @param  string  $name
+     * @param  string  $keyword
      * @return string|null
      */
-    public function getTagIdByName(string $name): ?string
+    public function getTagIdByKeyword(string $keyword): ?string
     {
-        return $this->dicomTagLoader->getTagIdByName($name);
+        return $this->dicomTagLoader->getAttributeIdByKeyword($keyword);
     }
 
     /**
@@ -104,7 +115,7 @@ class DicomTagService
     {
         $tag = $this->getTagInfo($tagId);
 
-        return $this->dataGet('vr', $tag);
+        return $this->dataGet('valueRepresentation', $tag);
     }
 
     /**
@@ -132,7 +143,7 @@ class DicomTagService
      */
     public function getAllTags(): array
     {
-        return $this->dicomTagLoader->getAllTags();
+        return $this->dicomTagLoader->getAllAttributes();
     }
 
     /**

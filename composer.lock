@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "077918a1542bde70ccb604fe35059115",
+    "content-hash": "b1183eb72de6dc91aa0216d61a15f45b",
     "packages": [
         {
             "name": "aurabx/dicom-data",
-            "version": "0.5.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aurabx/dicom-data.git",
-                "reference": "924489ed810d369caa53a156d1ce4914a34d8e55"
+                "reference": "25c08fdecaf1d7c2d6c033650982bdaf5c49f156"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aurabx/dicom-data/zipball/924489ed810d369caa53a156d1ce4914a34d8e55",
-                "reference": "924489ed810d369caa53a156d1ce4914a34d8e55",
+                "url": "https://api.github.com/repos/aurabx/dicom-data/zipball/25c08fdecaf1d7c2d6c033650982bdaf5c49f156",
+                "reference": "25c08fdecaf1d7c2d6c033650982bdaf5c49f156",
                 "shasum": ""
             },
             "require": {
@@ -40,9 +40,9 @@
             ],
             "support": {
                 "issues": "https://github.com/aurabx/dicom-data/issues",
-                "source": "https://github.com/aurabx/dicom-data/tree/0.5.0"
+                "source": "https://github.com/aurabx/dicom-data/tree/1.1.1"
             },
-            "time": "2025-04-20T07:14:32+00:00"
+            "time": "2025-04-22T03:37:16+00:00"
         }
     ],
     "packages-dev": [

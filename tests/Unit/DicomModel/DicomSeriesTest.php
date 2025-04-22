@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\DicomWebParser\DicomModel;
+namespace Aurabx\DicomWebParser\Tests\Unit\DicomModel;
 
 use Aurabx\DicomWebParser\DicomModel\DicomElement;
 use Aurabx\DicomWebParser\DicomModel\DicomInstance;
 use Aurabx\DicomWebParser\DicomModel\DicomSeries;
-use Aurabx\DicomWebParser\DicomTagService;
 use Aurabx\DicomWebParser\ParserException;
+use Aurabx\DicomWebParser\ParserOptions;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -72,7 +72,7 @@ final class DicomSeriesTest extends TestCase
         $instance = $this->mockInstance([
             '0020000E' => 'MatchUID',
         ]);
-        $instance->method('getFirstValueByName')->willReturn('MatchUID');
+        $instance->method('getElementFirstValueByKeyword')->willReturn('MatchUID');
 
         $series = new DicomSeries(
             instances: [$instance],
@@ -88,14 +88,14 @@ final class DicomSeriesTest extends TestCase
     public function it_rejects_instance_with_mismatched_uid(): void
     {
         $instance = $this->mockInstance(['0020000E' => 'SeriesA']);
-        $instance->method('getFirstValueByName')->willReturn('SeriesA');
+        $instance->method('getElementFirstValueByKeyword')->willReturn('SeriesA');
 
         $series = new DicomSeries(
             instances: [$instance],
         );
 
         $mismatch = $this->mockInstance(['0020000E' => 'SeriesB']);
-        $mismatch->method('getFirstValueByName')->willReturn('SeriesB');
+        $mismatch->method('getElementFirstValueByKeyword')->willReturn('SeriesB');
 
         $this->expectException(ParserException::class);
         $series->addInstance($mismatch);
@@ -112,9 +112,9 @@ final class DicomSeriesTest extends TestCase
         $series->sortInstancesByNumber();
 
         $sorted = $series->getInstances();
-        $this->assertSame(5, $sorted[0]->getFirstValue('00200013'));
-        $this->assertSame(10, $sorted[1]->getFirstValue('00200013'));
-        $this->assertSame(20, $sorted[2]->getFirstValue('00200013'));
+        $this->assertSame(5, $sorted[0]->getElementFirstValue('00200013'));
+        $this->assertSame(10, $sorted[1]->getElementFirstValue('00200013'));
+        $this->assertSame(20, $sorted[2]->getElementFirstValue('00200013'));
     }
 
     #[Test]
@@ -126,7 +126,7 @@ final class DicomSeriesTest extends TestCase
 
         // Build the DicomSeries
         $series = new DicomSeries([$instance], '1.2.3.4.5');
-        $result = $series->toNamedArray();
+        $result = $series->toArray(ParserOptions::USE_KEYWORDS);
 
         // Assert expected outcome
         $this->assertSame(['Modality' => 'CT'], $result);
@@ -137,7 +137,7 @@ final class DicomSeriesTest extends TestCase
     {
         $mock = $this->createMock(DicomInstance::class);
         $mock->method('hasElement')->willReturnCallback(fn($tag) => array_key_exists($tag, $values));
-        $mock->method('getFirstValue')->willReturnCallback(fn($tag) => $values[$tag] ?? null);
+        $mock->method('getElementFirstValue')->willReturnCallback(fn($tag) => $values[$tag] ?? null);
         $mock->method('getElement')->willReturnCallback(fn($tag) => new class($values, $tag) {
             private array $values;
             private string $tag;

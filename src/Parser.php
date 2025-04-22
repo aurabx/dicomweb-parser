@@ -5,6 +5,7 @@ namespace Aurabx\DicomWebParser;
 use Aurabx\DicomWebParser\DicomModel\DicomElement;
 use Aurabx\DicomWebParser\DicomModel\DicomInstance;
 use Aurabx\DicomWebParser\DicomModel\DicomSequence;
+use Aurabx\DicomWebParser\DicomModel\DicomSequenceItem;
 use Aurabx\DicomWebParser\DicomModel\DicomSeries;
 use Aurabx\DicomWebParser\DicomModel\DicomStudy;
 use Aurabx\DicomWebParser\Elements\AttributeTagParser;
@@ -82,7 +83,7 @@ class Parser
         // Group instances by series UID
         $seriesMap = [];
         foreach ($instances as $instance) {
-            $seriesUid = $instance->getFirstValue('0020000E');
+            $seriesUid = $instance->getElementFirstValue('0020000E');
             if (!isset($seriesMap[$seriesUid])) {
                 $seriesMap[$seriesUid] = [];
             }
@@ -101,7 +102,7 @@ class Parser
             throw new ParserException('No instances found to create study');
         }
 
-        return new DicomStudy($firstInstance->getFirstValue('0020000D'), $seriesList);
+        return new DicomStudy($firstInstance->getElementFirstValue('0020000D'), $seriesList);
     }
 
     /**
@@ -138,22 +139,21 @@ class Parser
         if (isset($element['Value'])) {
             switch ($vr) {
                 case 'SQ': // Sequence
-
-                    $items = [];
+                    $sequence = new DicomSequence();
 
                     foreach ($element['Value'] as $element_items) {
-                        $sequence = new DicomSequence();
+                        $item = new DicomSequenceItem();
 
                         if(!empty($element_items)) {
                             foreach ($element_items as $element_key => $element_item) {
-                                $sequence->addElement($element_key, $this->parseElement($element_item, $element_key));
+                                $item->addElement($element_key, $this->parseElement($element_item, $element_key));
                             }
                         }
 
-                        $items[] = $sequence;
+                        $sequence->addSequenceItem($item);
                     }
 
-                    $value = $items;
+                    $value = $sequence;
                     break;
 
                 case 'PN': // Person Name

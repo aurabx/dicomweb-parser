@@ -3,12 +3,11 @@
 namespace Aurabx\DicomWebParser\DicomModel;
 
 use Aurabx\DicomWebParser\DicomTagService;
-use Aurabx\DicomWebParser\ParserOptions;
 
 /**
- * Represents a DICOM instance (single image or object)
+ * There is no data structure to capture individual items in a Sequence in the DICOM model.
  */
-class DicomInstance
+class DicomSequenceItem
 {
     use HasElements;
 
@@ -19,4 +18,5 @@ class DicomInstance
     ) {
         $this->dicomTagService = $tagNameResolver ?? new DicomTagService();
     }
+
 }

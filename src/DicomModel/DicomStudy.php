@@ -3,6 +3,7 @@
 namespace Aurabx\DicomWebParser\DicomModel;
 
 use Aurabx\DicomWebParser\DicomTagService;
+use Aurabx\DicomWebParser\ParserOptions;
 
 /**
  * Represents a DICOM study (collection of series)
@@ -30,8 +31,11 @@ class DicomStudy
         "00080050", // AccessionNumber
         "00081030", // StudyDescription
         "00100010", // PatientName
+        "00100001", // Other Patient Names
+        "00101005", // Patient Birth Name
         "00100020", // PatientID
-        "00101000", // OtherPatientIDs
+        "00100022", // Type of identifier
+        "00101002", // OtherPatientIDs sequence
         "00100030", // PatientBirthDate
         "00100040", // PatientSex
         "00200010", // StudyID
@@ -56,8 +60,6 @@ class DicomStudy
         "00180015", // BodyPartExamined
     ];
 
-    private DicomTagService $dicomTagService;
-
     /**
      * Create a new DICOM study
      *
@@ -67,11 +69,9 @@ class DicomStudy
     public function __construct(
         string $studyInstanceUid,
         array $series = [],
-        ?DicomTagService $tagNameResolver = null
     ) {
         $this->studyInstanceUid = $studyInstanceUid;
         $this->series = $series;
-        $this->dicomTagService = $tagNameResolver ?? new DicomTagService();
     }
 
     /**
@@ -158,6 +158,14 @@ class DicomStudy
     }
 
     /**
+     * @return bool
+     */
+    public function hasSeries(): bool
+    {
+        return !empty($this->series);
+    }
+
+    /**
      * Get all series in this study, or a specific series
      *
      * @param  string|null  $index
@@ -179,37 +187,15 @@ class DicomStudy
     }
 
     /**
-     * Convert instance to flat array (tag → string value)
-     *
-     * @return array<string, string>
+     * @return DicomSeries|null
      */
-    public function getSeriesFlatArray(): array
+    public function getFirstSeries(): DicomSeries|null
     {
-        $result = [];
-        if (!empty($this->series)) {
-            foreach($this->series as $series) {
-                $result[] = $series->toArray();
-            }
+        if (empty($this->series)) {
+            return null;
         }
 
-        return $result;
-    }
-
-    /**
-     * Convert instance to flat array (tag → string value)
-     *
-     * @return array<string, string>
-     */
-    public function getSeriesNamedFlatArray(): array
-    {
-        $result = [];
-        if (!empty($this->series)) {
-            foreach($this->series as $series) {
-                $result[] = $series->toNamedArray();
-            }
-        }
-
-        return $result;
+        return reset($this->series);
     }
 
     /**
@@ -217,47 +203,12 @@ class DicomStudy
      *
      * @return array<string, array{vr: string, value: mixed}>
      */
-    public function toArray(): array
+    public function toArray(string $keys = ParserOptions::USE_TAGS, array $tags = []): array
     {
-        $result = [];
-
-        $first = $this->getSeries(0);
-        if ($first === null) {
+        if (!$this->hasSeries()) {
             return [];
         }
 
-        foreach ($this->studyLevelTags as $tag) {
-            if ($first->getFirstValue($tag)) {
-                $result[$tag] = $first->getFirstValue($tag);
-            }
-        }
-
-        return $result;
+        return $this->getSeries(0)?->toArray($keys, $tags);
     }
-
-    /**
-     * Convert instance to array with tag → [vr, value]
-     *
-     * @return array<string, array{vr: string, value: mixed}>
-     */
-    public function toNamedArray(): array
-    {
-        $result = [];
-
-        $first = $this->getSeries(0);
-        if ($first === null) {
-            return [];
-        }
-
-        foreach ($this->studyLevelTags as $tag) {
-            if ($first->getFirstValue($tag)) {
-                $result[$this->dicomTagService->getTagName($tag)] = $first->getFirstValue($tag);
-            }
-        }
-
-        return $result;
-    }
-
-
-
 }
