@@ -68,7 +68,11 @@ class DicomElement
      */
     public function getFirstValue(): mixed
     {
-        if (is_array($this->value) && count($this->value) > 0) {
+        if (empty($this->value)) {
+            return '';
+        }
+
+        if (is_array($this->value)) {
             return $this->value[0];
         }
 
@@ -82,10 +86,6 @@ class DicomElement
      */
     public function toArray(string $keys = ParserOptions::USE_TAGS): mixed
     {
-        if (empty($this->value)) {
-            return [];
-        }
-
         if ($this->vr === 'SQ' && $this->value instanceof DicomSequence) {
             $value = $this->value->toArray($keys);
         } else {
