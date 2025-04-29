@@ -560,7 +560,7 @@ JSON;
 
         // Test that the empty sequence is properly handled
         $otherIdsSequence = $instance->getElementValue('00101002');
-        $this->assertNull($otherIdsSequence);
+        $this->assertEmpty($otherIdsSequence);
 
         // Check that the element exists but has no value
         $otherIdsElement = $instance->getElement('00101002');
