@@ -76,7 +76,7 @@ class Parser
      * @return DicomStudy The parsed DICOM study
      * @throws ParserException
      */
-    public function parseStudy(string|array $jsonData): DicomStudy
+    public function parseStudy(string|array $jsonData, string|array $order = DicomStudy::ORDER_DEFAULT): DicomStudy
     {
         $instances = $this->parseInstances($jsonData);
 
@@ -102,7 +102,19 @@ class Parser
             throw new ParserException('No instances found to create study');
         }
 
-        return new DicomStudy($firstInstance->getElementFirstValue('0020000D'), $seriesList);
+        $dicomStudy = new DicomStudy($firstInstance->getElementFirstValue('0020000D'), $seriesList);
+
+        if (!is_array($order)) {
+            $order = [
+                $order
+            ];
+        }
+
+        foreach ($order as $ord) {
+            $dicomStudy->orderSeries($ord);
+        }
+
+        return $dicomStudy;
     }
 
     /**

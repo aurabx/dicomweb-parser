@@ -10,6 +10,8 @@ use Aurabx\DicomWebParser\ParserOptions;
  */
 class DicomStudy
 {
+    use OrdersSeries;
+
     /**
      * @var array<DicomSeries> Series in this study
      */
@@ -59,6 +61,18 @@ class DicomStudy
         "0020000E", // SeriesInstanceUID
         "00180015", // BodyPartExamined
     ];
+
+    public const string ORDER_DEFAULT = 'default';
+    public const string ORDER_SERIES_NUMBER = 'series-number';
+    public const string ORDER_SERIES_DATE = 'series-date';
+    public const string ORDER_EARLIEST_STUDY_DATE = 'earliest-date';
+
+    /**
+     * The current order.
+     *
+     * @var string
+     */
+    public string $order = self::ORDER_DEFAULT;
 
     /**
      * Create a new DICOM study
@@ -166,12 +180,13 @@ class DicomStudy
     }
 
     /**
-     * Get all series in this study, or a specific series
+     * Get all series in this study, or a specific series.
      *
      * @param  string|null  $index
+     * @param  string  $order This won't update the order, just return the series in that order (use orderSeries instead)
      * @return DicomSeries|array|null
      */
-    public function getSeries(?string $index = null): DicomSeries|array|null
+    public function getSeries(?string $index = null, string $order = self::ORDER_DEFAULT): DicomSeries|array|null
     {
         if ($index !== null) {
             if (!empty($this->series)) {
@@ -183,19 +198,73 @@ class DicomStudy
             return null;
         }
 
+        if ($order === self::ORDER_EARLIEST_STUDY_DATE && $this->order !== self::ORDER_EARLIEST_STUDY_DATE) {
+            return $this->orderSeriesByStudyDate($this->series);
+        }
+
+        if ($order === self::ORDER_SERIES_DATE && $this->order !== self::ORDER_SERIES_DATE) {
+            return $this->orderSeriesBySeriesDate($this->series);
+        }
+
+        if ($order === self::ORDER_SERIES_NUMBER && $this->order !== self::ORDER_SERIES_NUMBER) {
+            return $this->orderSeriesByNumber($this->series);
+        }
+
         return $this->series;
     }
 
     /**
+     * Reorder the series.
+     *
+     * Note that once reordered, the default order cant be restored without reparsing.
+     *
+     * @param  string  $order
+     * @return $this
+     */
+    public function orderSeries(string $order = self::ORDER_DEFAULT): DicomStudy
+    {
+        $this->order = $order;
+
+        if ($order === self::ORDER_EARLIEST_STUDY_DATE) {
+            $this->series = $this->orderSeriesByStudyDate($this->series);
+        }
+
+        if ($order === self::ORDER_SERIES_DATE) {
+            $this->series = $this->orderSeriesBySeriesDate($this->series);
+        }
+
+        if ($order === self::ORDER_SERIES_NUMBER) {
+            $this->series = $this->orderSeriesByNumber($this->series);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param  string  $order
      * @return DicomSeries|null
      */
-    public function getFirstSeries(): DicomSeries|null
+    public function getFirstSeries(string $order = self::ORDER_DEFAULT): DicomSeries|null
     {
         if (empty($this->series)) {
             return null;
         }
 
-        return reset($this->series);
+        $series = $this->series;
+
+        if ($order === self::ORDER_EARLIEST_STUDY_DATE && $this->order !== self::ORDER_EARLIEST_STUDY_DATE) {
+            $series = $this->orderSeriesByStudyDate($series);
+        }
+
+        if ($order === self::ORDER_SERIES_DATE && $this->order !== self::ORDER_SERIES_DATE) {
+            $series = $this->orderSeriesBySeriesDate($series);
+        }
+
+        if ($order === self::ORDER_SERIES_NUMBER && $this->order !== self::ORDER_SERIES_NUMBER) {
+            $series = $this->orderSeriesByNumber($series);
+        }
+
+        return reset($series);
     }
 
     /**
