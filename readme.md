@@ -10,7 +10,7 @@ A PHP library for parsing DICOMWeb JSON responses into structured PHP objects.
 ## Installation
 
 ```bash
-composer require your-vendor/dicomweb-parser
+composer require aurabx/dicomweb-parser
 ```
 
 ## Usage
