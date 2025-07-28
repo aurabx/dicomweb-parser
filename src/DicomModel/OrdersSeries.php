@@ -63,7 +63,7 @@ trait OrdersSeries
      */
     protected function orderSeriesByNumber(array $series): array
     {
-        return $this->orderSeriesByField($series, 'series_number', static function ($value) {
+        return $this->orderSeriesByField($series, '00200011', static function ($value) {
             return is_numeric($value) ? (int)$value : false;
         });
     }
@@ -77,7 +77,7 @@ trait OrdersSeries
      */
     protected function orderSeriesBySeriesDate(array $series): array
     {
-        return $this->orderSeriesByField($series, 'series_date', static function ($value) {
+        return $this->orderSeriesByField($series, '00080021', static function ($value) {
             return strtotime($value);
         });
     }
@@ -93,7 +93,7 @@ trait OrdersSeries
      */
     protected function orderSeriesByStudyDate(array $series): array
     {
-        return $this->orderSeriesByField($series, 'study_date', static function ($value) {
+        return $this->orderSeriesByField($series, '00080020', static function ($value) {
             return strtotime($value);
         });
     }

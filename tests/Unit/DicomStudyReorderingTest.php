@@ -43,10 +43,10 @@ class DicomStudyReorderingTest extends TestCase
             {
                 // Map logical names used by the ordering trait to actual tags.
                 return match ($tag) {
-                    'series_number' => $this->data['00200011'] ?? null,
-                    'series_date'   => $this->data['00080021'] ?? null,
-                    'study_date'    => $this->data['00080020'] ?? null,
-                    default         => $this->data[$tag] ?? null,
+                    '00200011' => $this->data['00200011'] ?? null,
+                    '00080021' => $this->data['00080021'] ?? null,
+                    '00080020' => $this->data['00080020'] ?? null,
+                    default    => $this->data[$tag] ?? null,
                 };
             }
 
