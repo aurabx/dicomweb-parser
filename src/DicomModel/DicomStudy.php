@@ -183,31 +183,31 @@ class DicomStudy
      * Get all series in this study, or a specific series.
      *
      * @param  string|null  $index
-     * @param  string  $order This won't update the order, just return the series in that order (use orderSeries instead)
+     * @param  string|null  $order This won't update the order, just return the series in that order (use orderSeries instead)
      * @return DicomSeries|array|null
      */
-    public function getSeries(?string $index = null, string $order = self::ORDER_DEFAULT): DicomSeries|array|null
+    public function getSeries(?string $index = null, ?string $order = null): DicomSeries|array|null
     {
         if ($index !== null) {
-            if (!empty($this->series)) {
-                if (array_key_exists($index, $this->series)) {
-                    return $this->series[$index];
-                }
+            if (!empty($this->series) && array_key_exists($index, $this->series)) {
+                return $this->series[$index];
             }
 
             return null;
         }
 
-        if ($order === self::ORDER_EARLIEST_STUDY_DATE && $this->order !== self::ORDER_EARLIEST_STUDY_DATE) {
-            return $this->orderSeriesByStudyDate($this->series);
-        }
+        if ($order !== null) {
+            if ($order === self::ORDER_EARLIEST_STUDY_DATE && $this->order !== self::ORDER_EARLIEST_STUDY_DATE) {
+                return $this->orderSeriesByStudyDate($this->series);
+            }
 
-        if ($order === self::ORDER_SERIES_DATE && $this->order !== self::ORDER_SERIES_DATE) {
-            return $this->orderSeriesBySeriesDate($this->series);
-        }
+            if ($order === self::ORDER_SERIES_DATE && $this->order !== self::ORDER_SERIES_DATE) {
+                return $this->orderSeriesBySeriesDate($this->series);
+            }
 
-        if ($order === self::ORDER_SERIES_NUMBER && $this->order !== self::ORDER_SERIES_NUMBER) {
-            return $this->orderSeriesByNumber($this->series);
+            if ($order === self::ORDER_SERIES_NUMBER && $this->order !== self::ORDER_SERIES_NUMBER) {
+                return $this->orderSeriesByNumber($this->series);
+            }
         }
 
         return $this->series;
@@ -225,15 +225,15 @@ class DicomStudy
     {
         $this->order = $order;
 
-        if ($order === self::ORDER_EARLIEST_STUDY_DATE) {
+        if ($this->order === self::ORDER_EARLIEST_STUDY_DATE) {
             $this->series = $this->orderSeriesByStudyDate($this->series);
         }
 
-        if ($order === self::ORDER_SERIES_DATE) {
+        if ($this->order === self::ORDER_SERIES_DATE) {
             $this->series = $this->orderSeriesBySeriesDate($this->series);
         }
 
-        if ($order === self::ORDER_SERIES_NUMBER) {
+        if ($this->order === self::ORDER_SERIES_NUMBER) {
             $this->series = $this->orderSeriesByNumber($this->series);
         }
 
@@ -241,10 +241,10 @@ class DicomStudy
     }
 
     /**
-     * @param  string  $order
+     * @param  string|null  $order
      * @return DicomSeries|null
      */
-    public function getFirstSeries(string $order = self::ORDER_DEFAULT): DicomSeries|null
+    public function getFirstSeries(?string $order = null): DicomSeries|null
     {
         if (empty($this->series)) {
             return null;
@@ -252,16 +252,18 @@ class DicomStudy
 
         $series = $this->series;
 
-        if ($order === self::ORDER_EARLIEST_STUDY_DATE && $this->order !== self::ORDER_EARLIEST_STUDY_DATE) {
-            $series = $this->orderSeriesByStudyDate($series);
-        }
+        if (!empty($order)) {
+            if ($order === self::ORDER_EARLIEST_STUDY_DATE && $this->order !== self::ORDER_EARLIEST_STUDY_DATE) {
+                $series = $this->orderSeriesByStudyDate($series);
+            }
 
-        if ($order === self::ORDER_SERIES_DATE && $this->order !== self::ORDER_SERIES_DATE) {
-            $series = $this->orderSeriesBySeriesDate($series);
-        }
+            if ($order === self::ORDER_SERIES_DATE && $this->order !== self::ORDER_SERIES_DATE) {
+                $series = $this->orderSeriesBySeriesDate($series);
+            }
 
-        if ($order === self::ORDER_SERIES_NUMBER && $this->order !== self::ORDER_SERIES_NUMBER) {
-            $series = $this->orderSeriesByNumber($series);
+            if ($order === self::ORDER_SERIES_NUMBER && $this->order !== self::ORDER_SERIES_NUMBER) {
+                $series = $this->orderSeriesByNumber($series);
+            }
         }
 
         return reset($series);
