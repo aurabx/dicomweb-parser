@@ -15,10 +15,6 @@ class BinaryParser implements ElementParserInterface
         }
 
         // If values are provided, return them
-        if ($element['Value'] !== null) {
-            return $element['Value'];
-        }
-
-        return [];
+        return $element['Value'] ?? [];
     }
 }

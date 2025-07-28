@@ -8,7 +8,6 @@ class DicomSequence
 {
     public string $tag;
 
-
     public function __construct(
         string $tag,
     ) {

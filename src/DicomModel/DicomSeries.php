@@ -42,8 +42,6 @@ class DicomSeries
         '00185100', // PatientPosition
     ];
 
-    private DicomTagService $dicomTagService;
-
     /**
      * Create a new DICOM series
      *
@@ -54,24 +52,20 @@ class DicomSeries
     public function __construct(
         array $instances = [],
         ?string $seriesInstanceUid = null,
-        ?DicomTagService $dicomTagService = null
     )
     {
-        $this->dicomTagService = $dicomTagService ?? new DicomTagService();
         $this->instances = $instances;
 
         if ($seriesInstanceUid) {
             $this->seriesInstanceUid = $seriesInstanceUid;
-        } else {
-            if (!empty($instances)) {
-                $uid = $this->getFirstValue('0020000E');
-                if (!$uid) {
-                    throw new ParserException('Series instance UID not found in instance');
-                }
-                $this->seriesInstanceUid = $uid;
-            } else {
-                throw new ParserException('Cannot create series without instances or explicit UID');
+        } elseif (!empty($instances)) {
+            $uid = $this->getFirstValue('0020000E');
+            if (!$uid) {
+                throw new ParserException('Series instance UID not found in instance');
             }
+            $this->seriesInstanceUid = $uid;
+        } else {
+            throw new ParserException('Cannot create series without instances or explicit UID');
         }
     }
 
@@ -209,10 +203,8 @@ class DicomSeries
      */
     public function getInstance(string $index): ?DicomInstance
     {
-        if (!empty($this->instances)) {
-            if (array_key_exists($index, $this->instances)) {
-                return $this->instances[$index];
-            }
+        if (!empty($this->instances) && array_key_exists($index, $this->instances)) {
+            return $this->instances[$index];
         }
 
         return null;

@@ -2,7 +2,6 @@
 
 namespace Aurabx\DicomWebParser\DicomModel;
 
-use Aurabx\DicomWebParser\DicomTagService;
 use Aurabx\DicomWebParser\ParserOptions;
 
 /**
@@ -62,10 +61,10 @@ class DicomStudy
         "00180015", // BodyPartExamined
     ];
 
-    public const string ORDER_DEFAULT = 'default';
-    public const string ORDER_SERIES_NUMBER = 'series-number';
-    public const string ORDER_SERIES_DATE = 'series-date';
-    public const string ORDER_EARLIEST_STUDY_DATE = 'earliest-date';
+    public const ORDER_DEFAULT = 'default';
+    public const ORDER_SERIES_NUMBER = 'series-number';
+    public const ORDER_SERIES_DATE = 'series-date';
+    public const ORDER_EARLIEST_STUDY_DATE = 'earliest-date';
 
     /**
      * The current order.

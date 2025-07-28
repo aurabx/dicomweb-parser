@@ -3,7 +3,6 @@
 namespace Aurabx\DicomWebParser\DicomModel;
 
 use Aurabx\DicomWebParser\DicomTagService;
-use Aurabx\DicomWebParser\ParserOptions;
 
 /**
  * Represents a DICOM instance (single image or object)
