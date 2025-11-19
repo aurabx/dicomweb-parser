@@ -23,7 +23,7 @@ class DicomStudyReorderingTest extends TestCase
      */
     private function createDummyInstance(array $data): DicomInstance
     {
-        return new class($data) extends DicomInstance {
+        return new class ($data) extends DicomInstance {
             private array $data;
 
             public function __construct(array $data)
@@ -278,8 +278,8 @@ class DicomStudyReorderingTest extends TestCase
 
         // --- Assert that the new ordering based on study date is different from the inherent series number order ---
         $this->assertNotEquals(
-            array_map(fn($s) => $s->getSeriesInstanceUid(), $orderedByStudyDate),
-            array_map(fn($s) => $s->getSeriesInstanceUid(), $orderedByNumber)
+            array_map(fn ($s) => $s->getSeriesInstanceUid(), $orderedByStudyDate),
+            array_map(fn ($s) => $s->getSeriesInstanceUid(), $orderedByNumber)
         );
     }
 }

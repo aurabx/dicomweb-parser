@@ -2,12 +2,8 @@
 
 namespace Aurabx\DicomWebParser\Elements;
 
-use Aurabx\DicomData\DicomDictionary;
-use Aurabx\DicomData\DicomTag;
-
 class AttributeTagParser implements ElementParserInterface
 {
-
     public static function parse(array $element): array
     {
         $result = [];

@@ -6,7 +6,6 @@ namespace Aurabx\DicomWebParser\Tests\Unit\DicomModel;
 
 use Aurabx\DicomWebParser\DicomModel\DicomSeries;
 use Aurabx\DicomWebParser\DicomModel\DicomStudy;
-use Aurabx\DicomWebParser\ParserOptions;
 use Aurabx\DicomWebParser\Tests\HasTestData;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -52,7 +51,7 @@ final class DicomStudyTest extends TestCase
     #[Test]
     public function it_returns_first_value_from_series(): void
     {
-        $valueObject = new class {
+        $valueObject = new class () {
             public function getValue(): string
             {
                 return 'TestValue';

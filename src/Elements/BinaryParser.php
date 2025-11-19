@@ -4,7 +4,6 @@ namespace Aurabx\DicomWebParser\Elements;
 
 class BinaryParser implements ElementParserInterface
 {
-
     public static function parse(array $element): array
     {
         // If InlineBinary is provided, decode it

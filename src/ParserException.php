@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Aurabx\DicomWebParser;
 
 /**

@@ -2,7 +2,6 @@
 
 namespace Aurabx\DicomWebParser\DicomModel;
 
-use Aurabx\DicomWebParser\DicomTagService;
 use Aurabx\DicomWebParser\ParserException;
 use Aurabx\DicomWebParser\ParserOptions;
 
@@ -52,8 +51,7 @@ class DicomSeries
     public function __construct(
         array $instances = [],
         ?string $seriesInstanceUid = null,
-    )
-    {
+    ) {
         $this->instances = $instances;
 
         if ($seriesInstanceUid) {
@@ -166,7 +164,7 @@ class DicomSeries
      */
     public function sortInstancesByNumber(): self
     {
-        usort($this->instances, static function(DicomInstance $a, DicomInstance $b) {
+        usort($this->instances, static function (DicomInstance $a, DicomInstance $b) {
             $aNum = $a->getElementFirstValue('00200013');
             $bNum = $b->getElementFirstValue('00200013');
 

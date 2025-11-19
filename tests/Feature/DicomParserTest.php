@@ -428,7 +428,7 @@ JSON;
         $this->assertCount(3, $series);
 
         // Sort by series number to assert order
-        usort($series, fn($a, $b) => $a->getSeriesNumber() <=> $b->getSeriesNumber());
+        usort($series, fn ($a, $b) => $a->getSeriesNumber() <=> $b->getSeriesNumber());
 
         $this->assertEquals('series-uid-3', $series[0]->getSeriesInstanceUid()); // Series number 1
         $this->assertEquals('series-uid-1', $series[1]->getSeriesInstanceUid()); // Series number 2

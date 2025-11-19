@@ -136,9 +136,9 @@ final class DicomSeriesTest extends TestCase
     private function mockInstance(array $values): \PHPUnit\Framework\MockObject\MockObject
     {
         $mock = $this->createMock(DicomInstance::class);
-        $mock->method('hasElement')->willReturnCallback(fn($tag) => array_key_exists($tag, $values));
-        $mock->method('getElementFirstValue')->willReturnCallback(fn($tag) => $values[$tag] ?? null);
-        $mock->method('getElement')->willReturnCallback(fn($tag) => new class($values, $tag) {
+        $mock->method('hasElement')->willReturnCallback(fn ($tag) => array_key_exists($tag, $values));
+        $mock->method('getElementFirstValue')->willReturnCallback(fn ($tag) => $values[$tag] ?? null);
+        $mock->method('getElement')->willReturnCallback(fn ($tag) => new class ($values, $tag) {
             private array $values;
             private string $tag;
             public function __construct(array $values, string $tag)

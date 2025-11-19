@@ -11,8 +11,7 @@ class DicomTagService
 {
     public function __construct(
         public ?DicomTagLoader $dicomTagLoader = null
-    )
-    {
+    ) {
         if ($dicomTagLoader === null) {
             $this->dicomTagLoader = new DicomTagLoader();
         }
@@ -116,7 +115,8 @@ class DicomTagService
         return $this->dicomTagLoader->getAllVRs();
     }
 
-    private function dataGet(string $key, ?array $data, mixed $default = null) {
+    private function dataGet(string $key, ?array $data, mixed $default = null)
+    {
 
         if (!empty($data) && array_key_exists($key, $data)) {
             return $data[$key];

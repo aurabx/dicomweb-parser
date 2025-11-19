@@ -158,7 +158,7 @@ class Parser
                     foreach ($element['Value'] as $element_items) {
                         $item = new DicomSequenceItem();
 
-                        if(!empty($element_items)) {
+                        if (!empty($element_items)) {
                             foreach ($element_items as $element_key => $element_item) {
                                 $item->addElement($element_key, $this->parseElement($element_item, $element_key));
                             }
